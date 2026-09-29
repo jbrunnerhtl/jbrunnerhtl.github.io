@@ -1,9 +1,9 @@
-# canvas-3d-experience Specification
+## RENAMED Requirements
 
-## Purpose
-The fixed 3D background: a liquid chrome orb that follows scroll and pointer, rendered only when needed and replaced by a static gradient where 3D would cost more than it adds.
+- FROM: `### Requirement: Endless Particle Corridor`
+- TO: `### Requirement: Starfield All Around`
 
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: GitHub Logo Companion
 The system SHALL render a three-dimensional GitHub logo as a companion object in the fixed background layer behind the page content. The logo SHALL use the same mark as the site's GitHub icon, given depth, and a metallic, iridescent material lit by a procedural studio environment (no downloaded HDR map). The companion SHALL appear only at the start of the journey, beside the hero text, facing the viewer: while it rests there its idle sway and pointer lean SHALL stay within a limited angle, so it never turns edge-on. The companion is decoration only. It SHALL NOT capture pointer events, so it never blocks interaction with the content, and it SHALL NOT act as a link.
@@ -47,36 +47,6 @@ The system SHALL move the camera along a curved route through space as a pure fu
 - **WHEN** a tablet is rotated or the window is resized across a layout boundary
 - **THEN** the companion and the galaxies switch to that layout's size and placement
 
-### Requirement: On-Demand Rendering
-The system SHALL render the 3D scene only when it can change on screen: at full frame rate while the hero is visible, at full frame rate while the user scrolls or moves the pointer anywhere on the page (plus a short settle period), and not at all otherwise. The scene's animation clock SHALL advance only on rendered frames, so pausing never causes a visible jump.
-
-#### Scenario: User reads mid-page without interacting
-- **WHEN** the hero is scrolled out of view and there has been no scroll or pointer input for the settle period
-- **THEN** the canvas renders no frames and the page runs at the display's full frame rate
-
-#### Scenario: User scrolls mid-page
-- **WHEN** the user scrolls while the hero is out of view
-- **THEN** the flight renders at the display's full frame rate, not at a reduced rate
-
-#### Scenario: User resumes scrolling mid-page
-- **WHEN** the user scrolls again after the scene was paused
-- **THEN** rendering resumes from the frozen state without the companion's pose or the particles jumping
-
-### Requirement: Deferred and Conditional 3D Loading
-The system SHALL load the 3D scene's code only after the browser is idle following the first render, and SHALL show a static gradient background instead of loading 3D at all when the user prefers reduced motion, has data saving enabled, the device reports 2 GB of memory or less or 2 CPU cores or fewer, or WebGL is unavailable. The device pixel ratio SHALL be capped at 1.5.
-
-#### Scenario: Page loads on a capable device
-- **WHEN** the page first loads
-- **THEN** the initial JavaScript excludes three.js, and the canvas fades in over the same static gradient once the 3D code has loaded during idle time
-
-#### Scenario: User prefers reduced motion
-- **WHEN** the operating system's reduced-motion preference is enabled
-- **THEN** no 3D code is downloaded and the static gradient background is shown
-
-#### Scenario: Browser does not support WebGL
-- **WHEN** WebGL initialization fails or is disabled
-- **THEN** the static gradient background remains without throwing unhandled exceptions
-
 ### Requirement: Starfield All Around
 The system SHALL surround the camera with stars in every direction, in several sizes and colours (white, blue-white and warm tones) and at several depths, so that nearer stars pass faster than distant ones. The stars SHALL twinkle gently while the scene renders. They SHALL be available along the whole route, never running out and in every direction the camera turns. Stars SHALL fade in from the distance and fade out before reaching the camera instead of popping in or out. The number of stars SHALL be reduced on mobile layouts.
 
@@ -95,6 +65,8 @@ The system SHALL surround the camera with stars in every direction, in several s
 #### Scenario: Page is viewed on a phone
 - **WHEN** the page is opened on a mobile layout
 - **THEN** the starfield uses fewer stars than on desktop while the flight still reads as continuous movement
+
+## ADDED Requirements
 
 ### Requirement: Space World
 The system SHALL render outer space around the route: a distant sky in every direction with faint stars and a soft nebula glow that turns with the view but never comes closer, nebula clouds placed along the route that the camera passes near or through, and one galaxy for every station after the hero (the stats, About, each project, the repository list, Skills, Contact). Each galaxy SHALL be made of thousands of glowing stars with a bright core, and each SHALL have its own colors and shape (spiral galaxies with two to four arms, a barred spiral at Skills, an elliptical galaxy at the repository list, a large destination galaxy at Contact). The galaxies SHALL turn slowly, the inner stars faster than the rim. They SHALL sit on alternating sides of the route so each is in view beside its station's content, SHALL appear only as the camera approaches them, and SHALL fade out stars right in front of the lens when the route passes through a galaxy's rim. All of it SHALL be generated in code with no downloaded textures or models.

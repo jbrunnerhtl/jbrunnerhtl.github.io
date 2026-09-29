@@ -2,9 +2,11 @@
 
 ## Purpose
 How Jan Brunner's GitHub work is presented: featured project cards with verified data, further repositories, the skills overview and live GitHub statistics.
+
 ## Requirements
+
 ### Requirement: Real Project Data and Verified Links
-The system SHALL feature six of Jan Brunner's public GitHub projects (Driving Planner, Flashcards, FruitAuth, Crow Demo Backend, DrivingTracker, RPN Calculator) with descriptions and tech stacks verified against each repository's source, and SHALL not feature Prolog or the Prolog project. Featured projects MAY live in other GitHub accounts or organizations, in which case the card SHALL link to that repository and show a short repository label.
+The system SHALL feature six of Jan Brunner's public GitHub projects (Driving Planner, Flashcards, 3D Vector Viewer, Crow Demo Backend, DrivingTracker, RPN Calculator) with descriptions and tech stacks verified against each repository's source, and SHALL not feature Prolog or the Prolog project. Featured projects MAY live in other GitHub accounts or organizations, in which case the card SHALL link to that repository and show a short repository label.
 
 #### Scenario: User opens a project
 - **WHEN** the user clicks a project card
@@ -19,11 +21,11 @@ The system SHALL feature six of Jan Brunner's public GitHub projects (Driving Pl
 - **THEN** its card shows a separate "Live" link to that site
 
 ### Requirement: Project Cards
-The system SHALL present featured projects as cards showing language (with GitHub's language color), year, title, description, stack tags and repository name, in a grid that never overflows narrow screens. Team projects SHALL additionally show a localized "Team · N" badge with the number of team members.
+The system SHALL present featured projects as cards showing language (with GitHub's language color), year, title, description, stack tags and repository name. In the stacked layout the cards SHALL be in a grid that never overflows narrow screens. In journey mode each card SHALL be a station of its own in featured order, beside its own galaxy, shown as a hologram: a tinted, see-through surface with an edge and glow in the project's language color instead of a dark fill. The Projects heading and intro SHALL be shown with the first card. Team projects SHALL additionally show a localized "Team · N" badge with the number of team members.
 
 #### Scenario: User hovers over a project card
 - **WHEN** the pointer hovers a card on a hover-capable device
-- **THEN** the card lifts slightly and its border brightens; on touch devices it responds with a subtle press instead of a sticky hover state
+- **THEN** the card lifts slightly and tilts towards the pointer, a soft sheen follows the pointer and its border glows in the project's language color; on touch devices it responds with a subtle press instead of a sticky hover state, and with reduced motion it does not tilt
 
 #### Scenario: Card shows a long repository name
 - **WHEN** a repository name is too long for the card on a narrow screen
@@ -33,6 +35,10 @@ The system SHALL present featured projects as cards showing language (with GitHu
 - **WHEN** a featured project was built by a team, such as Flashcards (4 members) or Driving Planner (3 members)
 - **THEN** the card shows a "Team · 4" or "Team · 3" badge in the current language, and solo projects show no badge
 
+#### Scenario: Projects in journey mode
+- **WHEN** journey mode is active, on any screen width
+- **THEN** the six featured projects appear as six stations, one card each with its own galaxy, in featured order, with the Projects heading at the first station
+
 ### Requirement: More Repositories List
 The system SHALL list further public repositories with a short note and language below the featured projects, plus a link to all repositories showing the live repository count.
 
@@ -41,11 +47,15 @@ The system SHALL list further public repositories with a short note and language
 - **THEN** a list of additional repositories (e.g. quarus-db-syp, Rust-Todo-List, Address-Book) links to each repository, followed by an "All N repositories" link to the GitHub profile
 
 ### Requirement: Skills Overview
-The system SHALL show skills in their groups (Languages including SQL and PL/SQL, Frameworks, Data, Tooling), as text only and without self-rated proficiency levels, as one horizontally looping marquee row per group with a localized group label. Adjacent rows SHALL move in opposite directions. The marquee SHALL be purely decorative motion without hover, cursor or text-selection interaction.
+The system SHALL show skills in their groups (Languages including SQL and PL/SQL, Frameworks, Data, Tooling), as text only and without self-rated proficiency levels. In the stacked layout each group SHALL be one horizontally looping marquee row with a localized group label, adjacent rows moving in opposite directions, as purely decorative motion without hover, cursor or text-selection interaction. In journey mode the groups SHALL instead be shown side by side as static, wrapping chips, so every skill can be read at once.
 
 #### Scenario: User views skills
-- **WHEN** the Skills section is displayed
+- **WHEN** the Skills section is displayed in the stacked layout
 - **THEN** each group appears as a labeled row of skill names in the current language, the rows loop continuously in alternating directions with faded edges, and no horizontal page overflow occurs from 320px to 2560px wide
+
+#### Scenario: User views skills in the space journey
+- **WHEN** the Skills station is held
+- **THEN** each group appears with its label and all of its skills as glowing chips, nothing moves sideways and no skill is cut off
 
 ### Requirement: Live GitHub Statistics
 The system SHALL show the public repository count, follower count and top languages fetched from the GitHub API, refreshed at most hourly, excluding Shell, HTML and Prolog from the language ranking, and SHALL fall back to static values when the API is unavailable.
@@ -83,4 +93,3 @@ The system SHALL expose each group as a single list with an accessible name, so 
 #### Scenario: JavaScript is unavailable
 - **WHEN** the page is viewed without JavaScript
 - **THEN** all skills are visible as static rows
-
