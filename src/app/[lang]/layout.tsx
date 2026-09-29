@@ -4,7 +4,7 @@ import "../globals.css";
 import { fontClasses } from "../fonts";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import Background from "@/components/3d/Background";
-import { THEME_INIT_SCRIPT } from "@/lib/themeScript";
+import JourneyProvider from "@/components/journey/JourneyProvider";
 import { LOCALES, hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { I18nProvider } from "@/i18n/I18nProvider";
@@ -37,10 +37,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
-    { media: "(prefers-color-scheme: light)", color: "#f5f5f3" },
-  ],
+  // The site only has a dark mode (a space scene).
+  themeColor: "#09090b",
 };
 
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
@@ -48,21 +46,12 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!hasLocale(lang)) notFound();
 
   return (
-    // The inline script sets data-theme before paint, so the server value may differ.
-    <html
-      lang={lang}
-      data-theme="dark"
-      className={fontClasses}
-      suppressHydrationWarning
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
+    <html lang={lang} className={fontClasses}>
       <body className="isolate min-h-full bg-bg font-sans text-fg">
         <I18nProvider initialLang={lang}>
           <SmoothScrollProvider>
             <Background />
-            {children}
+            <JourneyProvider>{children}</JourneyProvider>
           </SmoothScrollProvider>
         </I18nProvider>
       </body>

@@ -5,7 +5,6 @@ import { fontClasses } from "./fonts";
 import FallbackBackground from "@/components/3d/FallbackBackground";
 import GithubIcon from "@/components/icons/GithubIcon";
 import Button from "@/components/ui/Button";
-import { THEME_INIT_SCRIPT } from "@/lib/themeScript";
 import { BASE_PATH, localePath } from "@/lib/basePath";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { en } from "@/i18n/dictionaries/en";
@@ -60,10 +59,10 @@ function NotFoundContent({ lang }: { lang: Locale }) {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en" data-theme="dark" className={fontClasses} suppressHydrationWarning>
+    // The locale script sets <html lang> before paint, so the server value may differ.
+    <html lang="en" className={fontClasses} suppressHydrationWarning>
       <head>
-        {/* Separate statements: two concatenated IIFEs without ";" would call one on the other. */}
-        <script dangerouslySetInnerHTML={{ __html: `${THEME_INIT_SCRIPT};${LOCALE_SCRIPT}` }} />
+        <script dangerouslySetInnerHTML={{ __html: LOCALE_SCRIPT }} />
       </head>
       <body className="isolate min-h-full bg-bg font-sans text-fg">
         <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>

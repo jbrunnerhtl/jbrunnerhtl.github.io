@@ -8,7 +8,7 @@
   --color-faint: var(--faint);
   --color-line: var(--line);
   --color-accent: var(--accent);
-  /* Overlay tint: white on dark, black on light. Use with an opacity, e.g. bg-tint/5. */
+  /* Overlay tint (white). Use with an opacity, e.g. bg-tint/5. */
   --color-tint: var(--tint);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -18,8 +18,7 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root,
-[data-theme="dark"] {
+:root {
   --bg: #09090b;
   --fg: #ededee;
   --muted: #a1a1aa;
@@ -33,29 +32,6 @@
   --chrome: linear-gradient(120deg, #ffffff 0%, #c9d4e4 35%, #9fd8ff 65%, #c4b5fd 100%);
   --scrollbar: rgb(255 255 255 / 0.12);
   color-scheme: dark;
-}
-
-[data-theme="light"] {
-  --bg: #f5f5f3;
-  --fg: #121214;
-  --muted: #52525b;
-  --faint: #65656e;
-  --line: rgb(0 0 0 / 0.09);
-  --line-strong: rgb(0 0 0 / 0.18);
-  --accent: #2563eb;
-  --tint: #000000;
-  --card-from: rgb(255 255 255 / 0.9);
-  --card-to: rgb(250 250 249 / 0.9);
-  --chrome: linear-gradient(120deg, #121214 0%, #3b4a63 35%, #2f6fd6 65%, #7c5cd6 100%);
-  --scrollbar: rgb(0 0 0 / 0.18);
-  color-scheme: light;
-}
-
-/* Circular reveal when switching color mode (View Transitions API, animated from theme.ts). */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
 }
 
 /* Cross-fade when switching language (class set by I18nProvider). */
@@ -161,6 +137,37 @@
     transform: scale(0.99);
   }
 
+  /* Project cards: tilt towards the pointer, a sheen that follows it and a glow in the card's
+     language color (--glow). Pointer vars are written by ProjectCard; touch devices get neither. */
+  .card-tilt::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in oklab, var(--glow, var(--accent)) 16%, transparent),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .card-tilt:hover {
+      transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-4px);
+      border-color: color-mix(in oklab, var(--glow, var(--accent)) 55%, var(--line));
+      box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--glow, var(--accent)) 45%, transparent);
+      transition:
+        transform 0.2s ease-out,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
+    }
+    .card-tilt:hover::before {
+      opacity: 1;
+    }
+  }
+
   /* Hero name reveal (see RevealText). `both` holds the hidden start state until the delay ends. */
   .reveal-word {
     animation: reveal-word 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -255,4 +262,170 @@
 }
 .name-out {
   animation: name-out 0.55s cubic-bezier(0.45, 0, 0.7, 0.2) both;
+}
+
+/*
+ * Station journey (JourneyProvider sets [data-journey] on <html>). Unlayered, so it wins over
+ * the sections' utility paddings. In the stacked layout the wrappers don't affect layout at all.
+ */
+.station,
+.station-body {
+  display: contents;
+}
+.journey-spacer {
+  display: none;
+}
+
+[data-journey] .station {
+  display: block;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+[data-journey] .station-body {
+  display: block;
+  position: absolute;
+  inset: 0 0 auto;
+  padding: 5.5rem 0.75rem 2rem;
+  /* Parked until the driver's first frame. */
+  opacity: 0;
+  transform: translate3d(0, -300vh, 0);
+}
+[data-journey] .station[data-station="hero"] .station-body {
+  padding: 0;
+}
+[data-journey] .station:not([data-station="hero"]) .station-body > * {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+/*
+ * No boxes: the content floats in space beside its station's galaxy ([data-galaxy] is the galaxy's
+ * side). A soft, edgeless shadow behind the text and a text shadow keep it readable.
+ */
+[data-journey] .station:not([data-station="hero"]) .station-body > * {
+  position: relative;
+  isolation: isolate;
+  text-shadow: 0 1px 14px color-mix(in oklab, var(--bg) 85%, transparent);
+}
+[data-journey] .station:not([data-station="hero"]) .station-body > *::before {
+  content: "";
+  position: absolute;
+  inset: -12% -10%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--bg) 62%, transparent), transparent);
+}
+@media (min-width: 1024px) {
+  [data-journey] .station[data-galaxy="left"] .station-body > *,
+  [data-journey] .station[data-galaxy="right"] .station-body > * {
+    max-width: min(56%, 46rem);
+  }
+  [data-journey] .station[data-galaxy="right"] .station-body > * {
+    margin-left: max(5vw, calc((100vw - 72rem) / 2));
+    margin-right: auto;
+  }
+  [data-journey] .station[data-galaxy="left"] .station-body > * {
+    margin-left: auto;
+    margin-right: max(5vw, calc((100vw - 72rem) / 2));
+  }
+  /* In the narrower column, the sections' multi-column grids become one column. */
+  [data-journey] .station[data-galaxy="left"] .station-body .grid:not(dl),
+  [data-journey] .station[data-galaxy="right"] .station-body .grid:not(dl) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  [data-journey] .station[data-galaxy="left"] .station-body .grid:not(dl) > *,
+  [data-journey] .station[data-galaxy="right"] .station-body .grid:not(dl) > * {
+    grid-column: auto;
+  }
+}
+
+/* Cards become holograms in the journey: tinted glass edges in their colour instead of a dark fill. */
+[data-journey] .station .card {
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--glow, var(--accent)) 14%, transparent),
+    color-mix(in oklab, var(--bg) 30%, transparent) 70%
+  );
+  border-color: color-mix(in oklab, var(--glow, var(--accent)) 45%, transparent);
+  box-shadow:
+    0 0 50px -18px color-mix(in oklab, var(--glow, var(--accent)) 55%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #fff 12%, transparent);
+}
+
+/* Stats station: big glowing chrome numbers under a line that draws in on arrival. */
+.stat-value {
+  background: var(--chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 22px color-mix(in oklab, var(--accent) 45%, transparent));
+  text-shadow: none;
+}
+.stat-line {
+  display: block;
+  height: 1px;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  transform-origin: left;
+  transform: scaleX(var(--fill, 1));
+}
+[data-journey] .journey-spacer {
+  display: block;
+}
+
+/* Journey effects, driven by the station's --sp (-1 → 1 across the station) and --fill (0 → 1 on arrival). */
+[data-journey] .station .text-chrome {
+  background-size: 300% 100%;
+  background-position: calc(50% - var(--sp, 0) * 50%) 50%;
+}
+.timeline-fill {
+  display: none;
+}
+[data-journey] .timeline-fill {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), color-mix(in oklab, var(--accent) 30%, transparent));
+  transform-origin: top;
+  transform: scaleY(var(--fill, 1));
+}
+/* Each milestone lights up as the line reaches it (--at is its position along the line). */
+[data-journey] .timeline-dot {
+  opacity: clamp(0.2, calc((var(--fill, 1) - var(--at, 0)) * 6 + 0.2), 1);
+  scale: clamp(0.5, calc((var(--fill, 1) - var(--at, 0)) * 4 + 0.5), 1);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--accent) 70%, transparent);
+}
+
+/* Skills in the journey: groups side by side, every skill a readable glowing chip. */
+.skill-groups {
+  display: grid;
+  gap: 2rem 2.5rem;
+}
+@media (min-width: 640px) {
+  .skill-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.skill-chip {
+  border: 1px solid color-mix(in oklab, var(--accent) 38%, transparent);
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--fg);
+  box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 70%, transparent);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+@media (hover: hover) {
+  .skill-chip:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 22px -4px color-mix(in oklab, var(--accent) 80%, transparent);
+  }
 }

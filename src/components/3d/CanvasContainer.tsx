@@ -1,33 +1,28 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useMemo, useState, useSyncExternalStore, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
+import * as THREE from "three";
 import GithubCompanion from "./GithubCompanion";
 import { sceneLayout } from "./sceneLayout";
-import { CAMERA_START_Z, flightCameraZ } from "./flight";
-import ParticleField from "./ParticleField";
+import { buildRoute, type Route } from "./route";
+import Starfield from "./Starfield";
+import SkyBackground from "./SkyBackground";
+import Nebulae from "./Nebulae";
+import Galaxies from "./Galaxies";
+import { SPACE } from "./spaceTheme";
 import FallbackBackground from "./FallbackBackground";
+import { journeyStore } from "@/lib/journeyStore";
 import { isWebGLAvailable } from "@/lib/webgl";
 import { motionStore } from "@/lib/motionStore";
-import { useResolvedTheme, type ResolvedTheme } from "@/lib/theme";
 
-// Per-mode studio lighting for the chrome companion.
-const SCENE: Record<ResolvedTheme, { dome: string; top: string; bottom: string; strips: string[]; particles: string }> = {
-  dark: {
-    dome: "#1a1d24",
-    top: "#dfe7f5",
-    bottom: "#4b3f72",
-    strips: ["#ffffff", "#9fd8ff", "#c4b5fd", "#ffffff"],
-    particles: "#b9c3d6",
-  },
-  light: {
-    dome: "#9aa3b2",
-    top: "#ffffff",
-    bottom: "#5b4d9a",
-    strips: ["#ffffff", "#5aa9ff", "#a78bfa", "#ffffff"],
-    particles: "#4b5563",
-  },
+// Studio lighting for the chrome companion.
+const SCENE = {
+  dome: "#1a1d24",
+  top: "#dfe7f5",
+  bottom: "#4b3f72",
+  strips: ["#ffffff", "#9fd8ff", "#c4b5fd", "#ffffff"],
 };
 
 const STRIP_POSITIONS: [number, number][] = Array.from({ length: 8 }, (_, i) => {
@@ -35,30 +30,29 @@ const STRIP_POSITIONS: [number, number][] = Array.from({ length: 8 }, (_, i) => 
   return [Math.cos(a) * 6, Math.sin(a) * 6];
 });
 
-// Base / max scrim opacity per layout: stronger where the companion sits behind text,
-// but light enough past the hero that the flight stays visible.
-const SCRIM = { mobile: [0.4, 0.5], tablet: [0.25, 0.4], desktop: [0.12, 0.35] } as const;
-
-/** Dims the scene over the first ~700px of scroll by writing opacity straight to the DOM (no re-renders). */
-function ScrimDriver() {
-  useFrame((state) => {
-    const el = document.getElementById("scene-scrim");
-    if (!el) return;
-    const [base, max] = SCRIM[sceneLayout(state.size.width, state.size.height)];
-    const dim = Math.min(motionStore.scrollPx / 700, 1);
-    el.style.opacity = String(base + dim * (max - base));
-  });
-  return null;
-}
-
 /**
- * Flies the camera through space with the scroll position and advances the pausable scene clock.
- * Mounted before the scene objects, so they read this frame's camera and time.
+ * Flies the camera along the route with the scroll position (still at each held station, gliding
+ * in between), looking ahead along the curve with a slight roll into turns. Also advances the
+ * pausable scene clock. Mounted before the scene objects, so they read this frame's camera and time.
  */
-function FlightDriver() {
+const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), ahead: new THREE.Vector3(), look: new THREE.Vector3() };
+
+function FlightDriver({ route }: { route: Route }) {
+
   useFrame((state, delta) => {
     motionStore.sceneTime += Math.min(delta, 1 / 20);
-    state.camera.position.z = flightCameraZ(motionStore.scrollPx);
+    const u = journeyStore.stations.length ? journeyStore.routeU(motionStore.scrollPx) : 0;
+    motionStore.routeU = u;
+
+    const t = Math.min(u / (route.count - 1), 1);
+    route.curve.getPoint(t, flight.pos);
+    route.curve.getTangent(t, flight.tangent);
+    route.curve.getTangent(Math.min(t + 0.02, 1), flight.ahead);
+    const cam = state.camera;
+    cam.position.copy(flight.pos);
+    cam.lookAt(flight.look.copy(flight.pos).add(flight.tangent));
+    // Lean into the turn: roll by how much the heading swings sideways just ahead.
+    cam.rotateZ(THREE.MathUtils.clamp((flight.tangent.x - flight.ahead.x) * 3, -0.1, 0.1));
   });
   return null;
 }
@@ -76,7 +70,7 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
 
   useEffect(() => {
     let raf = 0;
-    let activeUntil = performance.now() + SETTLE_MS; // also re-bakes the env map after a theme change
+    let activeUntil = performance.now() + SETTLE_MS; // also covers the first frames after the stations change
     let last = { px: -1, x: 0, y: 0 };
 
     const tick = (now: number) => {
@@ -97,13 +91,26 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
   return null;
 }
 
+const subscribeJourney = (fn: () => void) => journeyStore.subscribe(fn);
+const journeyVersion = () => journeyStore.version;
+
 export default function CanvasContainer() {
   // Loaded with ssr: false, so window is always available here.
   const [hasWebGL] = useState(isWebGLAvailable);
   const [isMobile] = useState(() => window.innerWidth < 768);
+  const [layout] = useState(() => sceneLayout(window.innerWidth, window.innerHeight));
   const [ready, setReady] = useState(false);
-  const theme = useResolvedTheme();
-  const scene = SCENE[theme];
+  const scene = SCENE;
+  const space = SPACE;
+
+  // One waypoint per station: rebuilt when the journey's stations change (e.g. across the breakpoint).
+  const version = useSyncExternalStore(subscribeJourney, journeyVersion, journeyVersion);
+  const namesKey = useMemo(() => {
+    void version;
+    return journeyStore.stations.map((s) => s.name).join(",");
+  }, [version]);
+  const names = useMemo(() => (namesKey ? namesKey.split(",") : ["hero"]), [namesKey]);
+  const route = useMemo(() => buildRoute(names.length), [names]);
 
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none select-none" aria-hidden>
@@ -111,7 +118,7 @@ export default function CanvasContainer() {
 
       {hasWebGL && (
         <Canvas
-          camera={{ position: [0, 0, CAMERA_START_Z], fov: 42 }}
+          camera={{ position: [0, 0, 0], fov: 42, far: 1200 }}
           frameloop="demand"
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
@@ -122,8 +129,7 @@ export default function CanvasContainer() {
           <Suspense fallback={null}>
             {/* Procedural studio environment: no HDR download. A soft gradient dome plus a ring of
                 light strips gives smooth, liquid reflections instead of hard shapes. */}
-            {/* Keyed by mode: the env map is rendered once (frames=1), so remount to re-bake it. */}
-            <Environment key={theme} resolution={256} frames={1}>
+            <Environment resolution={256} frames={1}>
               <color attach="background" args={[scene.dome]} />
               <Lightformer form="rect" intensity={1.2} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[20, 20, 1]} color={scene.top} />
               {STRIP_POSITIONS.map(([x, z], i) => (
@@ -140,18 +146,25 @@ export default function CanvasContainer() {
               <Lightformer form="rect" intensity={0.8} position={[0, -6, 0]} rotation-x={-Math.PI / 2} scale={[20, 20, 1]} color={scene.bottom} />
             </Environment>
 
-            <FrameDriver wakeKey={theme} />
-            <ScrimDriver />
-            <FlightDriver />
+            <SkyBackground
+              sky={space.sky}
+              nebulaA={space.nebulaA}
+              nebulaB={space.nebulaB}
+              stars={space.skyStars}
+              size={isMobile ? 512 : 1024}
+            />
+            <FrameDriver wakeKey={namesKey} />
+            <FlightDriver route={route} />
             <GithubCompanion />
-            <ParticleField count={isMobile ? 450 : 1200} color={scene.particles} />
+            <Starfield count={isMobile ? 3000 : 8000} colors={space.stars} />
+            <Nebulae route={route} tints={space.nebulae} />
+            <Galaxies route={route} names={names} layout={layout} />
           </Suspense>
         </Canvas>
       )}
 
-      {/* Vignette, plus a scrim that dims the scene once you scroll past the hero. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--bg)_100%)]" />
-      <div id="scene-scrim" className="absolute inset-0 bg-bg opacity-[0.12] max-md:opacity-40" />
+      {/* Soft vignette; the station panels bring their own surfaces, so the scene isn't dimmed. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,color-mix(in_oklab,var(--bg)_65%,transparent)_100%)]" />
     </div>
   );
 }

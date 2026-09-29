@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import GithubIcon from "@/components/icons/GithubIcon";
 import { useScrollTo } from "@/components/providers/SmoothScrollProvider";
+import { useJourney } from "@/components/journey/JourneyProvider";
+import { journeyStore } from "@/lib/journeyStore";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import LanguageSwitch from "@/components/ui/LanguageSwitch";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -20,13 +21,23 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const journey = useJourney();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // Mark whichever section crosses the middle band of the viewport as active.
+    // Space journey: the section whose station is being held is active (none at the hero).
+    if (journey) {
+      const unsubscribe = journeyStore.subscribe(() => setActive(journeyStore.activeSection));
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        unsubscribe();
+      };
+    }
+
+    // Stacked page: mark whichever section crosses the middle band of the viewport as active.
     const observer = new IntersectionObserver(
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(e.target.id === "hero" ? null : e.target.id);
@@ -42,7 +53,7 @@ export default function Navbar() {
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
     };
-  }, []);
+  }, [journey]);
 
   // Close the mobile menu on Escape or when the layout grows past the breakpoint.
   useEffect(() => {
@@ -128,7 +139,6 @@ export default function Navbar() {
             <GithubIcon className="h-4 w-4" />
           </a>
           <LanguageSwitch />
-          <ThemeToggle />
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}

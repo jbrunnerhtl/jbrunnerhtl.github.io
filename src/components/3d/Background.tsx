@@ -3,31 +3,16 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import FallbackBackground from "./FallbackBackground";
+import { canShowScene } from "@/lib/sceneSupport";
 
 // WebGL must stay client-only; this wrapper lets the page itself remain a Server Component.
 const CanvasContainer = dynamic(() => import("./CanvasContainer"), { ssr: false });
-
-type NavigatorHints = Navigator & {
-  connection?: { saveData?: boolean };
-  deviceMemory?: number;
-};
-
-/** Skip the 3D scene (and its ~250 KB of JS) where it would cost more than it adds. */
-function prefersStaticBackground() {
-  const nav = navigator as NavigatorHints;
-  return (
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-    nav.connection?.saveData === true ||
-    (nav.deviceMemory !== undefined && nav.deviceMemory <= 2) ||
-    (navigator.hardwareConcurrency > 0 && navigator.hardwareConcurrency <= 2)
-  );
-}
 
 export default function Background() {
   const [load3d, setLoad3d] = useState(false);
 
   useEffect(() => {
-    if (prefersStaticBackground()) return;
+    if (!canShowScene()) return;
     // Load three.js only once the browser is idle, so it never competes with the first render.
     const start = () => setLoad3d(true);
     if ("requestIdleCallback" in window) {

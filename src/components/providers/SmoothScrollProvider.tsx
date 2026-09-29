@@ -4,13 +4,32 @@ import React, { useEffect, createContext, useContext, useRef } from "react";
 import Lenis from "lenis";
 import { MotionConfig } from "framer-motion";
 import { motionStore } from "@/lib/motionStore";
+import { journeyStore } from "@/lib/journeyStore";
 
 const LenisContext = createContext<React.RefObject<Lenis | null> | null>(null);
 
-/** Smooth-scrolls to a section id, falling back to native scrolling. */
+/** The Lenis instance (null under reduced motion), for components that drive scrolling themselves. */
+export function useLenisRef() {
+  return useContext(LenisContext);
+}
+
+/**
+ * Smooth-scrolls to a section id, falling back to native scrolling.
+ * In the station journey it flies to where the section's first station is held instead.
+ */
 export function useScrollTo() {
   const lenisRef = useContext(LenisContext);
   return (id: string) => {
+    const i = journeyStore.enabled ? journeyStore.firstStationOf(id) : -1;
+    if (i >= 0) {
+      const target = journeyStore.holdPx(i);
+      // Longer trips through space take a little longer, capped so the navbar stays snappy.
+      const stations = Math.abs(i - journeyStore.routeU(motionStore.scrollPx));
+      const lenis = lenisRef?.current;
+      if (lenis) lenis.scrollTo(target, { duration: Math.min(1.2 + stations * 0.3, 2.8) });
+      else window.scrollTo({ top: target, behavior: "smooth" });
+      return;
+    }
     const el = document.getElementById(id);
     if (!el) return;
     const lenis = lenisRef?.current;

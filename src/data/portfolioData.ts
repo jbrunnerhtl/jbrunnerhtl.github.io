@@ -67,10 +67,10 @@ export const PORTFOLIO_DATA = {
       teamSize: 4,
     },
     {
-      id: "fruit-auth",
-      repo: "FruitAuthDBFrontend",
-      language: "TypeScript",
-      stack: ["TypeScript", "Express", "JWT", "bcrypt", "SQLite"],
+      id: "vector-viewer",
+      repo: "3d-vector-graphic",
+      language: "C#",
+      stack: ["C#", ".NET 10", "Raylib-cs"],
       year: "2026",
     },
     {

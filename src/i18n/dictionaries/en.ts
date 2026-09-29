@@ -23,13 +23,6 @@ export const en = {
     github: "GitHub profile",
     language: "Language",
   },
-  theme: {
-    dark: "Dark",
-    light: "Light",
-    system: "System",
-    ariaLabel: "Color mode: {current}. Switch to {next}",
-    title: "{current} mode",
-  },
   hero: {
     tagline:
       "I build things across the stack: Java desktop apps, TypeScript APIs, C++ backends and services with Docker and Kubernetes.",
@@ -38,6 +31,9 @@ export const en = {
     statContest: "Cloudflight Contest 2024",
     statYears: "{n}+ yrs",
     statSince: "Coding since {year}",
+    statsLabel: "GitHub",
+    statsTitle: "My work",
+    statsTitleHighlight: "in numbers.",
     statLanguages: "Most used on GitHub",
     scrollHint: "Scroll to about",
   },
@@ -91,10 +87,10 @@ export const en = {
         description:
           "A JavaFX desktop app for learning with digital flashcards sorted into decks. It picks cards with a weighted selection algorithm, tracks study streaks and statistics, imports and exports decks and stores them as JSON with Jackson. Built with the MVP pattern, in English and German, with light and dark themes and JUnit and Mockito tests.",
       },
-      "fruit-auth": {
-        title: "FruitAuth",
+      "vector-viewer": {
+        title: "3D Vector Viewer",
         description:
-          "A full-stack TypeScript app with an Express 5 REST API and a vanilla TS frontend. It has JWT authentication, role-based authorization middleware, bcrypt password hashing and SQLite through better-sqlite3.",
+          "An interactive 3D vector viewer in C# with Raylib-cs. Add vectors, set their start and end points with sliders and watch them update live in an auto-scaling, labeled coordinate grid under an orbiting camera.",
       },
       crow: {
         title: "Crow Demo Backend",
