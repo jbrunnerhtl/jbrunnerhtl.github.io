@@ -3,14 +3,16 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
-import LiquidChromeMesh, { sceneLayout } from "./LiquidChromeMesh";
+import GithubCompanion from "./GithubCompanion";
+import { sceneLayout } from "./sceneLayout";
+import { CAMERA_START_Z, flightCameraZ } from "./flight";
 import ParticleField from "./ParticleField";
 import FallbackBackground from "./FallbackBackground";
 import { isWebGLAvailable } from "@/lib/webgl";
 import { motionStore } from "@/lib/motionStore";
 import { useResolvedTheme, type ResolvedTheme } from "@/lib/theme";
 
-// Per-mode studio lighting for the chrome orb.
+// Per-mode studio lighting for the chrome companion.
 const SCENE: Record<ResolvedTheme, { dome: string; top: string; bottom: string; strips: string[]; particles: string }> = {
   dark: {
     dome: "#1a1d24",
@@ -33,8 +35,9 @@ const STRIP_POSITIONS: [number, number][] = Array.from({ length: 8 }, (_, i) => 
   return [Math.cos(a) * 6, Math.sin(a) * 6];
 });
 
-// Base / max scrim opacity per layout: stronger where the orb sits behind text.
-const SCRIM = { mobile: [0.4, 0.7], tablet: [0.25, 0.65], desktop: [0.12, 0.62] } as const;
+// Base / max scrim opacity per layout: stronger where the companion sits behind text,
+// but light enough past the hero that the flight stays visible.
+const SCRIM = { mobile: [0.4, 0.5], tablet: [0.25, 0.4], desktop: [0.12, 0.35] } as const;
 
 /** Dims the scene over the first ~700px of scroll by writing opacity straight to the DOM (no re-renders). */
 function ScrimDriver() {
@@ -48,13 +51,25 @@ function ScrimDriver() {
   return null;
 }
 
+/**
+ * Flies the camera through space with the scroll position and advances the pausable scene clock.
+ * Mounted before the scene objects, so they read this frame's camera and time.
+ */
+function FlightDriver() {
+  useFrame((state, delta) => {
+    motionStore.sceneTime += Math.min(delta, 1 / 20);
+    state.camera.position.z = flightCameraZ(motionStore.scrollPx);
+  });
+  return null;
+}
+
 /** How long to keep rendering after the last scroll/pointer input, so the damped motion can settle. */
 const SETTLE_MS = 1600;
 
 /**
  * Drives the render loop (the Canvas uses frameloop="demand"):
- * full frame rate while the hero is on screen; elsewhere half rate, and only while the user
- * scrolls or moves the pointer (plus SETTLE_MS). Idle, the dimmed orb costs no GPU time at all.
+ * always while the hero is on screen; elsewhere only while the user scrolls or moves the pointer
+ * (plus SETTLE_MS, which also lets the companion catch up). Idle, the scene costs no GPU time at all.
  */
 function FrameDriver({ wakeKey }: { wakeKey: string }) {
   const invalidate = useThree((s) => s.invalidate);
@@ -64,7 +79,6 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
     let activeUntil = performance.now() + SETTLE_MS; // also re-bakes the env map after a theme change
     let last = { px: -1, x: 0, y: 0 };
 
-    let frame = 0;
     const tick = (now: number) => {
       const { scrollPx, pointerX, pointerY } = motionStore;
       if (scrollPx !== last.px || pointerX !== last.x || pointerY !== last.y) {
@@ -72,9 +86,8 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
         last = { px: scrollPx, x: pointerX, y: pointerY };
       }
       const inHero = scrollPx < window.innerHeight * 0.9;
-      // Past the hero the orb is dimmed and moves slowly: half the frame rate is indistinguishable
-      // there and leaves the page itself more headroom while scrolling.
-      if (inHero || (now < activeUntil && frame++ % 2 === 0)) invalidate();
+      // Full rate everywhere while active: the flight visibly stutters at half rate.
+      if (inHero || now < activeUntil) invalidate();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -98,7 +111,7 @@ export default function CanvasContainer() {
 
       {hasWebGL && (
         <Canvas
-          camera={{ position: [0, 0, 5.5], fov: 42 }}
+          camera={{ position: [0, 0, CAMERA_START_Z], fov: 42 }}
           frameloop="demand"
           dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
@@ -129,8 +142,9 @@ export default function CanvasContainer() {
 
             <FrameDriver wakeKey={theme} />
             <ScrimDriver />
-            <LiquidChromeMesh />
-            <ParticleField count={isMobile ? 180 : 400} color={scene.particles} />
+            <FlightDriver />
+            <GithubCompanion />
+            <ParticleField count={isMobile ? 450 : 1200} color={scene.particles} />
           </Suspense>
         </Canvas>
       )}
