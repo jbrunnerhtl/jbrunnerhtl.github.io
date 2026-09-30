@@ -8,6 +8,7 @@ export const de: Dictionary = {
     description:
       "Portfolio von Jan Brunner, Schüler der Softwareentwicklung an der HTL Leonding (Oberösterreich). Projekte in Java, TypeScript, C#, C++ und Rust von github.com/jbrunnerhtl.",
     ogDescription: "Projekte und Skills von Jan Brunner, HTL Leonding.",
+    keywords: ["Jan Brunner", "jbrunnerhtl", "HTL Leonding", "Softwareentwicklung", "Portfolio", "Oberösterreich", "Java", "TypeScript", "C#", "C++", "Rust"],
   },
   profile: {
     location: "Oberösterreich",

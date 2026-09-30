@@ -77,7 +77,8 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
           label={profile.name}
           intro={
             <>
-              <RevealText text="Jan" className="text-fg" delay={0.15} />{" "}
+              <RevealText text="Jan" className="text-fg" delay={0.15} />
+              <span className="glyph" data-text=" " />
               <RevealText text="Brunner." className="text-chrome" delay={0.25} />
             </>
           }

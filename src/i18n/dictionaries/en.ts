@@ -7,6 +7,7 @@ export const en = {
     description:
       "Portfolio of Jan Brunner, a software development student at HTL Leonding (Upper Austria). Java, TypeScript, C#, C++ and Rust projects from github.com/jbrunnerhtl.",
     ogDescription: "Projects and skills of Jan Brunner, HTL Leonding.",
+    keywords: ["Jan Brunner", "jbrunnerhtl", "HTL Leonding", "software development", "portfolio", "Upper Austria", "Java", "TypeScript", "C#", "C++", "Rust"],
   },
   profile: {
     location: "Upper Austria",

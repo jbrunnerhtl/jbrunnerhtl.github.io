@@ -74,23 +74,25 @@ export function StaggerItem({ children, className = "", ...props }: HTMLMotionPr
  * waiting for hydration. `className` goes on each moving word, not a wrapper, so
  * gradient text (background-clip: text) moves with its glyphs.
  */
+/**
+ * Decorative only: the words are drawn from data-text (see .glyph) and hidden from assistive tech,
+ * so the heading around it must carry the real text (NameSwap's label does).
+ */
 export function RevealText({ text, className = "", delay = 0 }: { text: string; className?: string; delay?: number }) {
   const words = text.split(" ");
   return (
     <>
-      <span className="sr-only">{text}</span>
       {words.map((word, i) => (
         <React.Fragment key={i}>
           {/* Mask with vertical breathing room: the tight h1 line-height would otherwise clip glyph tops/bottoms. */}
           <span aria-hidden className="-my-[0.12em] inline-block overflow-hidden py-[0.12em] pr-[0.06em] -mr-[0.06em] align-bottom">
             <span
-              className={`reveal-word inline-block ${className}`}
+              className={`reveal-word glyph inline-block ${className}`}
+              data-text={word}
               style={{ animationDelay: `${delay + i * 0.07}s` }}
-            >
-              {word}
-            </span>
+            />
           </span>
-          {i < words.length - 1 && " "}
+          {i < words.length - 1 && <span className="glyph" data-text=" " />}
         </React.Fragment>
       ))}
     </>

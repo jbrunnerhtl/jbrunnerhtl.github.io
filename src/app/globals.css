@@ -264,6 +264,12 @@
 .name-in {
   animation: name-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+/* Decorative characters drawn from data-text, so they add nothing to the document text: the hero
+   <h1> then reads only its label ("Jan Brunner") for search engines, while the animated letters,
+   gradients and masks look exactly the same. */
+.glyph::before {
+  content: attr(data-text);
+}
 .name-out {
   animation: name-out 0.55s cubic-bezier(0.45, 0, 0.7, 0.2) both;
 }

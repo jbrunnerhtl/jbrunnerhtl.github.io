@@ -33,7 +33,7 @@ function Name({ segments, mode }: { segments: NameSegment[]; mode?: "in" | "out"
   const delay = () => `${(mode === "in" ? IN_DELAY_S : 0) + i++ * STAGGER_S}s`;
   return toWords(segments).map((word, w) => (
     <React.Fragment key={w}>
-      {w > 0 && " "}
+      {w > 0 && <span className="glyph" data-text=" " />}
       <span data-word className="inline-block whitespace-nowrap">
         {word.flatMap((run, r) =>
           [...run.letters].map((letter, l) => (
@@ -41,11 +41,10 @@ function Name({ segments, mode }: { segments: NameSegment[]; mode?: "in" | "out"
             <span key={`${r}-${l}`} className="-my-[0.12em] inline-block overflow-hidden py-[0.12em] align-bottom">
               <span
                 data-letter
-                className={`inline-block ${run.className} ${mode ? `name-${mode}` : ""}`}
+                data-text={letter}
+                className={`glyph inline-block ${run.className} ${mode ? `name-${mode}` : ""}`}
                 style={mode ? { animationDelay: delay() } : undefined}
-              >
-                {letter}
-              </span>
+              />
             </span>
           )),
         )}
@@ -72,7 +71,8 @@ function alignGradients(root: HTMLElement) {
 /**
  * Alternates a heading between names: the letters of one name leave upwards while the next rises in.
  * The first name is shown by `intro` (server-rendered, CSS entrance). Every name reserves its space
- * invisibly so the heading never changes height. Screen readers only get `label`.
+ * invisibly so the heading never changes height. All letters are drawn from data-text (see .glyph),
+ * so `label` is the heading's only text, for screen readers and search engines alike.
  * Stays on the first name when reduced motion is preferred, and pauses off-screen or in a hidden tab.
  */
 export default function NameSwap({
