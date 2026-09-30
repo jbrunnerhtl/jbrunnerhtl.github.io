@@ -2,9 +2,7 @@
 
 import React, { useEffect, useMemo, useState, useSyncExternalStore, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
-import GithubCompanion from "./GithubCompanion";
 import { sceneLayout } from "./sceneLayout";
 import { buildRoute, type Route } from "./route";
 import Starfield from "./Starfield";
@@ -17,32 +15,19 @@ import { journeyStore } from "@/lib/journeyStore";
 import { isWebGLAvailable } from "@/lib/webgl";
 import { motionStore } from "@/lib/motionStore";
 
-// Studio lighting for the chrome companion.
-const SCENE = {
-  dome: "#1a1d24",
-  top: "#dfe7f5",
-  bottom: "#4b3f72",
-  strips: ["#ffffff", "#9fd8ff", "#c4b5fd", "#ffffff"],
-};
-
-const STRIP_POSITIONS: [number, number][] = Array.from({ length: 8 }, (_, i) => {
-  const a = (i / 8) * Math.PI * 2;
-  return [Math.cos(a) * 6, Math.sin(a) * 6];
-});
+const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), ahead: new THREE.Vector3(), look: new THREE.Vector3() };
 
 /**
- * Flies the camera along the route with the scroll position (still at each held station, gliding
- * in between), looking ahead along the curve with a slight roll into turns. Also advances the
+ * Flies the camera along the route with the scroll position (slowly through each held station,
+ * faster in between), looking ahead along the curve with a slight roll into turns. Also advances the
  * pausable scene clock. Mounted before the scene objects, so they read this frame's camera and time.
  */
-const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), ahead: new THREE.Vector3(), look: new THREE.Vector3() };
 
 function FlightDriver({ route }: { route: Route }) {
 
   useFrame((state, delta) => {
     motionStore.sceneTime += Math.min(delta, 1 / 20);
     const u = journeyStore.stations.length ? journeyStore.routeU(motionStore.scrollPx) : 0;
-    motionStore.routeU = u;
 
     const t = Math.min(u / (route.count - 1), 1);
     route.curve.getPoint(t, flight.pos);
@@ -63,7 +48,7 @@ const SETTLE_MS = 1600;
 /**
  * Drives the render loop (the Canvas uses frameloop="demand"):
  * always while the hero is on screen; elsewhere only while the user scrolls or moves the pointer
- * (plus SETTLE_MS, which also lets the companion catch up). Idle, the scene costs no GPU time at all.
+ * (plus SETTLE_MS, so damped motion can settle). Idle, the scene costs no GPU time at all.
  */
 function FrameDriver({ wakeKey }: { wakeKey: string }) {
   const invalidate = useThree((s) => s.invalidate);
@@ -100,7 +85,6 @@ export default function CanvasContainer() {
   const [isMobile] = useState(() => window.innerWidth < 768);
   const [layout] = useState(() => sceneLayout(window.innerWidth, window.innerHeight));
   const [ready, setReady] = useState(false);
-  const scene = SCENE;
   const space = SPACE;
 
   // One waypoint per station: rebuilt when the journey's stations change (e.g. across the breakpoint).
@@ -127,25 +111,6 @@ export default function CanvasContainer() {
           style={{ opacity: ready ? 1 : 0 }}
         >
           <Suspense fallback={null}>
-            {/* Procedural studio environment: no HDR download. A soft gradient dome plus a ring of
-                light strips gives smooth, liquid reflections instead of hard shapes. */}
-            <Environment resolution={256} frames={1}>
-              <color attach="background" args={[scene.dome]} />
-              <Lightformer form="rect" intensity={1.2} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[20, 20, 1]} color={scene.top} />
-              {STRIP_POSITIONS.map(([x, z], i) => (
-                <Lightformer
-                  key={i}
-                  form="rect"
-                  intensity={2.2}
-                  position={[x, 0, z]}
-                  onUpdate={(self) => self.lookAt(0, 0, 0)}
-                  scale={[1.2, 10, 1]}
-                  color={scene.strips[i % scene.strips.length]}
-                />
-              ))}
-              <Lightformer form="rect" intensity={0.8} position={[0, -6, 0]} rotation-x={-Math.PI / 2} scale={[20, 20, 1]} color={scene.bottom} />
-            </Environment>
-
             <SkyBackground
               sky={space.sky}
               nebulaA={space.nebulaA}
@@ -155,7 +120,6 @@ export default function CanvasContainer() {
             />
             <FrameDriver wakeKey={namesKey} />
             <FlightDriver route={route} />
-            <GithubCompanion />
             <Starfield count={isMobile ? 3000 : 8000} colors={space.stars} />
             <Nebulae route={route} tints={space.nebulae} />
             <Galaxies route={route} names={names} layout={layout} />

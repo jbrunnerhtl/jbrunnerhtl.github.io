@@ -18,6 +18,4 @@ export const motionStore = {
    * so pausing the render loop freezes the orb instead of making it jump when it resumes.
    */
   sceneTime: 0,
-  /** Position along the space route: exactly i while station i is held (see journeyStore.routeU). */
-  routeU: 0,
 };
