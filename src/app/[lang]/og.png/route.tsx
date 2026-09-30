@@ -2,39 +2,26 @@ import { ImageResponse } from "next/og";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import { seededRandom } from "@/lib/random";
 import { OG_IMAGE_SIZE } from "@/lib/site";
 
-// Link preview for /en/ and /de/ (Open Graph and the large Twitter/X card), rendered once at build
-// time into the static export as /<lang>/og.png. A route handler rather than the opengraph-image
-// convention, so the exported file has a .png extension and static hosts serve it as an image.
-// Drawn in code like the rest of the space look: no downloaded images or fonts.
+// Link preview for /en/ and /de/ and their project pages (Open Graph and the large Twitter/X card),
+// rendered once at build time into the static export as /<lang>/og.png. A route handler rather than
+// the opengraph-image convention, so the exported file has a .png extension and static hosts serve
+// it as an image. Drawn in code in the site's dark look: no downloaded images or fonts.
 
 export const dynamic = "force-static";
 
 const size = OG_IMAGE_SIZE;
+const ACCENT = "#2de2f0";
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
 }
 
-const STARS = (() => {
-  const random = seededRandom(630);
-  const stars = Array.from({ length: 260 }, () => ({
-    x: random() * size.width,
-    y: random() * size.height,
-    r: random() < 0.9 ? 1 + random() * 1.2 : 2 + random() * 1.5,
-    o: 0.25 + random() * 0.65,
-  }));
-  // Keep the text block clear, so no star sits inside a letter.
-  return stars.filter((s) => !(s.x > 80 && s.x < 1000 && s.y > 120 && s.y < 580));
-})();
-
 export async function GET(_request: Request, { params }: RouteContext<"/[lang]/og.png">) {
   const { lang } = await params;
   const t = await getDictionary(lang as Locale);
   const { profile } = PORTFOLIO_DATA;
-  const [first, ...rest] = profile.name.split(" ");
 
   return new ImageResponse(
     (
@@ -46,48 +33,41 @@ export async function GET(_request: Request, { params }: RouteContext<"/[lang]/o
           flexDirection: "column",
           justifyContent: "center",
           padding: "0 96px",
-          color: "#ededee",
-          backgroundColor: "#09090b",
-          backgroundImage:
-            "radial-gradient(ellipse 70% 60% at 78% 30%, rgba(99, 102, 241, 0.28), transparent), radial-gradient(ellipse 60% 55% at 12% 90%, rgba(56, 189, 248, 0.16), transparent)",
+          color: "#f2f2f2",
+          backgroundColor: "#111111",
         }}
       >
-        {STARS.map((s, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: s.x,
-              top: s.y,
-              width: s.r * 2,
-              height: s.r * 2,
-              borderRadius: "50%",
-              backgroundColor: "#ffffff",
-              opacity: s.o,
-            }}
-          />
-        ))}
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 26, color: "#a1a1aa" }}>
-          <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: "#34d399" }} />
+        {/* A soft sphere, like the hero's, to the right. */}
+        <div
+          style={{
+            position: "absolute",
+            left: 700,
+            top: 20,
+            width: 590,
+            height: 590,
+            borderRadius: "50%",
+            backgroundImage:
+              "radial-gradient(circle at 32% 30%, rgba(45, 226, 240, 0.55) 0%, rgba(45, 226, 240, 0) 45%), radial-gradient(circle at 50% 50%, #34403f 0%, rgba(52, 64, 63, 0.4) 60%, rgba(17, 17, 17, 0) 71%)",
+          }}
+        />
+        {/* The section divider: a thin line with a notched bar under its start. */}
+        <div style={{ display: "flex", position: "relative", width: 132, height: 14 }}>
+          <div style={{ position: "absolute", left: 0, top: 0, width: 132, height: 2, backgroundColor: ACCENT }} />
+          <div style={{ position: "absolute", left: 0, top: 0, width: 80, height: 12, backgroundColor: ACCENT }} />
+        </div>
+        <div style={{ display: "flex", marginTop: 48, fontSize: 30, letterSpacing: "0.3em", color: "#b3b3b3" }}>
+          {profile.name.toUpperCase()}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 28, fontSize: 128, fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 1 }}>
+          <span>{t.hero.role}</span>
+          <div style={{ display: "flex", width: 220, height: 2, marginLeft: 40, backgroundColor: "#8c8c8c" }} />
+        </div>
+        <div style={{ display: "flex", marginTop: 8, fontSize: 128, fontWeight: 500, letterSpacing: "-0.035em", lineHeight: 1, color: "#b3b3b3" }}>
+          <span style={{ color: "#8c8c8c", marginRight: 28 }}>+</span>
+          {t.hero.roles[0]}
+        </div>
+        <div style={{ position: "absolute", left: 96, bottom: 56, display: "flex", fontSize: 24, color: "#8c8c8c" }}>
           {t.profile.heroLine}
-        </div>
-        <div style={{ display: "flex", marginTop: 28, fontSize: 132, fontWeight: 700, letterSpacing: "-0.045em", lineHeight: 1 }}>
-          <span>{first}&nbsp;</span>
-          <span
-            style={{
-              backgroundImage: "linear-gradient(120deg, #ffffff 0%, #c9d4e4 35%, #9fd8ff 65%, #c4b5fd 100%)",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            {rest.join(" ")}.
-          </span>
-        </div>
-        <div style={{ display: "flex", marginTop: 36, maxWidth: 900, fontSize: 32, lineHeight: 1.4, color: "#a1a1aa" }}>
-          {t.hero.tagline}
-        </div>
-        <div style={{ position: "absolute", left: 96, bottom: 56, display: "flex", fontSize: 24, color: "#71717a" }}>
-          github.com/{profile.handle}
         </div>
       </div>
     ),

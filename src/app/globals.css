@@ -529,3 +529,10 @@ html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
   writing-mode: vertical-rl;
   -webkit-text-stroke-color: color-mix(in oklab, var(--fg) 35%, transparent);
 }
+
+/* ---------- 404 ---------- */
+/* global-not-found renders both languages; the pre-paint script sets <html lang> from the URL. */
+html:not([lang="de"]) [data-locale="de"],
+html[lang="de"] [data-locale="en"] {
+  display: none;
+}

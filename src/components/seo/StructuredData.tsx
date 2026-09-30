@@ -6,8 +6,8 @@ import { SITE_URL, siteUrl } from "@/lib/site";
 
 /**
  * JSON-LD for search engines: the page is a ProfilePage about Jan Brunner (a Person), part of the
- * WebSite, with the featured projects as SoftwareSourceCode by that person. Built from the same data
- * as the visible page; the email is left out on purpose.
+ * WebSite, with the featured projects as SoftwareSourceCode by that person (same @id as on each
+ * project's page). Built from the same data as the visible page; the email is left out on purpose.
  */
 export default async function StructuredData({ lang }: { lang: Locale }) {
   const { meta, profile: copy, projects: projectCopy } = await getDictionary(lang);
@@ -16,14 +16,15 @@ export default async function StructuredData({ lang }: { lang: Locale }) {
   const website = `${SITE_URL}/#website`;
   const projects = PORTFOLIO_DATA.projects.map((p) => {
     const repository = p.repoUrl ?? repoUrl(p.repo);
+    const page = siteUrl(`${lang}/projects/${p.id}`);
     return {
       "@type": "SoftwareSourceCode",
-      "@id": repository,
+      "@id": `${page}#project`,
       name: projectCopy.items[p.id].title,
-      description: projectCopy.items[p.id].description,
+      description: projectCopy.items[p.id].summary,
       codeRepository: repository,
       programmingLanguage: p.language,
-      url: p.demoUrl ?? repository,
+      url: page,
       inLanguage: lang,
       author: { "@id": person },
     };

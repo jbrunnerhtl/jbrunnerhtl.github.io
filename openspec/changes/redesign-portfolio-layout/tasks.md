@@ -111,10 +111,10 @@
 
 ## 7. SEO touch points, 404 and preview image
 
-- [ ] 7.1 Extend `sitemap.ts` with the 12 project URLs and alternates, and point each home-page `SoftwareSourceCode` `url` at its detail page with the `summary` as description. Verify that `out/sitemap.xml` lists 14 URLs and that the JSON-LD check script (from `improve-search-visibility`, adapted) passes.
-- [ ] 7.2 Redraw the OG image route in the new look (dark, accent sphere gradient, eyebrow name, role title, divider). Verify by opening `out/en/og.png` and `out/de/og.png` (1200×630).
-- [ ] 7.3 Restyle `global-not-found.tsx` to the new design and color mode (theme script included). Verify in WebKit that `/de/missing` shows German in light and dark mode, and that the page is still `noindex`.
-- [ ] 7.4 Commit locally ("Update SEO, 404 and preview image for the redesign"). Verify that the build passes.
+- [x] 7.1 Extend `sitemap.ts` with the 12 project URLs and alternates, and point each home-page `SoftwareSourceCode` `url` at its detail page with the `summary` as description. Verify that `out/sitemap.xml` lists 14 URLs and that the JSON-LD check script (from `improve-search-visibility`, adapted) passes.
+- [x] 7.2 Redraw the OG image route in the new look (dark, accent sphere gradient, eyebrow name, role title, divider). Verify by opening `out/en/og.png` and `out/de/og.png` (1200×630).
+- [x] 7.3 Restyle `global-not-found.tsx` to the new design and color mode (theme script included). Verify in WebKit that `/de/missing` shows German in light and dark mode, and that the page is still `noindex`.
+- [x] 7.4 Commit locally ("Update SEO, 404 and preview image for the redesign"). Verify that the build passes.
 
 ## 8. Cleanup and final checks
 
