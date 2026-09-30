@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useRef, useSyncExternalStore } from "react";
 import { useLenisRef } from "@/components/providers/SmoothScrollProvider";
 import { canShowScene } from "@/lib/sceneSupport";
-import { journeyStore, type Phase, type Station } from "@/lib/journeyStore";
+import { journeyStore, stableViewportHeight, type Phase, type Station } from "@/lib/journeyStore";
 import { motionStore } from "@/lib/motionStore";
 
 const JourneyContext = createContext(false);
@@ -157,6 +157,9 @@ export default function JourneyProvider({ children }: { children: React.ReactNod
 
       journeyStore.build();
       spacer.style.height = `${journeyStore.total}px`;
+      // Stations fade out below the navbar bar (see globals.css). Offsets ignore its entrance slide.
+      const bar = document.querySelector<HTMLElement>("[data-navbar-bar]");
+      if (bar) root.style.setProperty("--nav-clear", `${bar.offsetTop + bar.offsetHeight}px`);
       lenisRef?.current?.resize();
 
       stationEls = journeyStore.stations.map((s) => s.el);
@@ -185,7 +188,18 @@ export default function JourneyProvider({ children }: { children: React.ReactNod
       if (now.length !== stationEls.length || stationEls.some((el, i) => el !== now[i])) scheduleRebuild();
     });
     mutationObserver.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener("resize", scheduleRebuild);
+
+    // Mobile browsers resize the window whenever their toolbar shows or hides during a scroll.
+    // Only a new width or stable height (rotation, window resize) changes the timeline; rebuilding
+    // (and re-scrolling) mid-swipe would cut off the touch momentum.
+    let viewport = { w: window.innerWidth, h: stableViewportHeight() };
+    const onResize = () => {
+      const next = { w: window.innerWidth, h: stableViewportHeight() };
+      if (next.w === viewport.w && next.h === viewport.h) return;
+      viewport = next;
+      scheduleRebuild();
+    };
+    window.addEventListener("resize", onResize);
 
     const tick = () => {
       const px = motionStore.scrollPx;
@@ -216,9 +230,10 @@ export default function JourneyProvider({ children }: { children: React.ReactNod
       cancelAnimationFrame(rebuildRaf);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
-      window.removeEventListener("resize", scheduleRebuild);
+      window.removeEventListener("resize", onResize);
       document.removeEventListener("focusin", onFocus);
       root.removeAttribute("data-journey");
+      root.style.removeProperty("--nav-clear");
       journeyStore.enabled = false;
       journeyStore.stations = [];
       for (const el of stationEls) {

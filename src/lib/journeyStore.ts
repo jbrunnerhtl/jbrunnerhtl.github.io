@@ -38,6 +38,24 @@ export type Phase = "before" | "arrive" | "hold" | "leave" | "after";
 
 type Listener = () => void;
 
+let probe: HTMLElement | null = null;
+
+/**
+ * The journey's viewport height: the small viewport height (100svh), which stays the same while a
+ * mobile browser's toolbar shows or hides during a scroll, so the timeline doesn't change mid-swipe.
+ * Using the small height means tall content scrolls fully into view in either toolbar state.
+ */
+export function stableViewportHeight() {
+  if (!CSS.supports("height", "100svh")) return window.innerHeight;
+  if (!probe) {
+    probe = document.createElement("div");
+    probe.setAttribute("aria-hidden", "true");
+    probe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none";
+    document.body.appendChild(probe);
+  }
+  return probe.offsetHeight || window.innerHeight;
+}
+
 /** A point of the scroll → route map: scroll offset, route position and speed (du/dpx) there. */
 type Knot = { px: number; u: number; m: number };
 
@@ -86,7 +104,7 @@ export const journeyStore = {
 
   /** Measures the stations in DOM order and lays out the timeline. */
   build() {
-    const vh = window.innerHeight;
+    const vh = stableViewportHeight();
     const els = Array.from(document.querySelectorAll<HTMLElement>("[data-station]"));
     let start = 0;
     const stations: Station[] = els.map((el, i) => {

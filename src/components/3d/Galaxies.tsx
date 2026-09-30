@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { motionStore } from "@/lib/motionStore";
+import { journeyStore } from "@/lib/journeyStore";
 import { galaxyKind, galaxySide, type GalaxyKind, type GalaxySide } from "@/lib/stationGalaxies";
 import { GALAXIES } from "./spaceTheme";
 import { seededRandom } from "./random";
@@ -149,8 +150,13 @@ function glowTexture() {
 /** Galaxies appear only as the route approaches them, instead of all lining up far ahead. */
 const FADE_NEAR = 50;
 const FADE_FAR = 70;
+/** Below this width the content spans the screen (see globals.css), so a galaxy lies behind the
+ * text: it dims while its station is held and brightens again during the flight. */
+const NARROW = 1024;
+const HELD_DIM = 0.55;
 
 function Galaxy({
+  station,
   kind,
   position,
   quaternion,
@@ -159,6 +165,8 @@ function Galaxy({
   seed,
   glow,
 }: {
+  /** Index of the station this galaxy belongs to (its route position). */
+  station: number;
   kind: GalaxyKind;
   position: THREE.Vector3;
   quaternion: THREE.Quaternion;
@@ -178,7 +186,11 @@ function Galaxy({
     const group = groupRef.current;
     const m = materialRef.current;
     if (!group || !m) return;
-    const opacity = 1 - THREE.MathUtils.smoothstep(state.camera.position.distanceTo(position), FADE_NEAR, FADE_FAR);
+    let opacity = 1 - THREE.MathUtils.smoothstep(state.camera.position.distanceTo(position), FADE_NEAR, FADE_FAR);
+    if (state.size.width < NARROW && journeyStore.stations.length) {
+      const d = Math.abs(journeyStore.routeU(motionStore.scrollPx) - station);
+      opacity *= 1 - HELD_DIM * (1 - THREE.MathUtils.smoothstep(d, 0.25, 0.6));
+    }
     group.visible = opacity > 0.005;
     if (!group.visible) return;
     m.uniforms.uOpacity.value = opacity;
@@ -251,7 +263,7 @@ export default function Galaxies({
 
   const galaxies = useMemo(() => {
     const up = new THREE.Vector3(0, 1, 0);
-    const list: { key: string; kind: GalaxyKind; position: THREE.Vector3; quaternion: THREE.Quaternion; radius: number; seed: number }[] = [];
+    const list: { key: string; station: number; kind: GalaxyKind; position: THREE.Vector3; quaternion: THREE.Quaternion; radius: number; seed: number }[] = [];
     names.forEach((name, i) => {
       const side = galaxySide(i, name);
       if (!side) return;
@@ -268,6 +280,7 @@ export default function Galaxies({
         .normalize();
       list.push({
         key: name,
+        station: i,
         kind: galaxyKind(name),
         position,
         quaternion: new THREE.Quaternion().setFromUnitVectors(up, normal),

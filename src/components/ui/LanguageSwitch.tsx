@@ -30,7 +30,7 @@ export default function LanguageSwitch() {
               e.preventDefault();
               switchLang(l);
             }}
-            className={`relative grid h-8 min-w-9 place-items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wider transition-colors duration-300 md:h-7 ${
+            className={`relative grid h-8 min-w-9 place-items-center rounded-full px-2 font-mono text-[11px] uppercase tracking-wider transition-colors duration-300 md:h-7 coarse:h-11 coarse:min-w-11 ${
               active ? "text-fg" : "text-faint hover:text-fg"
             }`}
           >

@@ -42,8 +42,9 @@ const SETTLE_MS = 1600;
 
 /**
  * Drives the render loop (the Canvas uses frameloop="demand"):
- * always while the hero is on screen; elsewhere only while the user scrolls or moves the pointer
- * (plus SETTLE_MS, so damped motion can settle). Idle, the scene costs no GPU time at all.
+ * always while the hero is on screen (with a mouse or trackpad; touch devices save their battery);
+ * otherwise only while the user scrolls, moves the pointer or touches the screen (plus SETTLE_MS,
+ * so damped motion can settle). Idle, the scene costs no GPU time at all.
  */
 function FrameDriver({ wakeKey }: { wakeKey: string }) {
   const invalidate = useThree((s) => s.invalidate);
@@ -52,6 +53,11 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
     let raf = 0;
     let activeUntil = performance.now() + SETTLE_MS; // also covers the first frames after the stations change
     let last = { px: -1, x: 0, y: 0 };
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const onTouch = () => {
+      activeUntil = performance.now() + SETTLE_MS;
+    };
+    window.addEventListener("touchstart", onTouch, { passive: true });
 
     const tick = (now: number) => {
       const { scrollPx, pointerX, pointerY } = motionStore;
@@ -59,13 +65,16 @@ function FrameDriver({ wakeKey }: { wakeKey: string }) {
         activeUntil = now + SETTLE_MS;
         last = { px: scrollPx, x: pointerX, y: pointerY };
       }
-      const inHero = scrollPx < window.innerHeight * 0.9;
+      const inHero = finePointer && scrollPx < window.innerHeight * 0.9;
       // Full rate everywhere while active: the flight visibly stutters at half rate.
       if (inHero || now < activeUntil) invalidate();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("touchstart", onTouch);
+    };
   }, [invalidate, wakeKey]);
 
   return null;
@@ -99,7 +108,7 @@ export default function CanvasContainer() {
         <Canvas
           camera={{ position: [0, 0, 0], fov: 42, far: 1200 }}
           frameloop="demand"
-          dpr={[1, 1.5]}
+          dpr={isMobile ? [1, 1.25] : [1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           onCreated={() => requestAnimationFrame(() => setReady(true))}
           className="transition-opacity duration-[1400ms] ease-out"

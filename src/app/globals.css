@@ -18,6 +18,10 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Short screens (phones in landscape, small windows) and touch pointers. */
+@custom-variant short (@media (max-height: 500px));
+@custom-variant coarse (@media (pointer: coarse));
+
 :root {
   --bg: #09090b;
   --fg: #ededee;
@@ -276,12 +280,20 @@
   display: none;
 }
 
+/* Bottom edge of the navbar bar; JourneyProvider measures it, this is the fallback. */
+[data-journey] {
+  --nav-clear: calc(max(0.75rem, env(safe-area-inset-top)) + 3.75rem);
+}
 [data-journey] .station {
   display: block;
   position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  /* Tall content scrolling through its hold fades out below the navbar and at the bottom edge,
+     instead of showing through the navbar. Short, centred content starts below the fade. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--nav-clear), #000 calc(var(--nav-clear) + 1.5rem), #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to bottom, transparent var(--nav-clear), #000 calc(var(--nav-clear) + 1.5rem), #000 calc(100% - 1.5rem), transparent);
 }
 [data-journey] .station-body {
   display: block;
@@ -298,6 +310,17 @@
 [data-journey] .station:not([data-station="hero"]) .station-body > * {
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
+}
+/* Short screens: only just clear the navbar, so as much content as possible fits. */
+@media (max-height: 500px) {
+  [data-journey] .station-body {
+    padding-top: calc(var(--nav-clear) + 1rem);
+    padding-bottom: 1rem;
+  }
+  [data-journey] .station:not([data-station="hero"]) .station-body > * {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }
 /*
  * No boxes: the content floats in space beside its station's galaxy ([data-galaxy] is the galaxy's

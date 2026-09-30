@@ -57,12 +57,12 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
   const journey = useJourney();
 
   return (
-    <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10">
+    <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10 short:pb-4 short:pt-[6.5rem]">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.1 }}
-        className="mb-6 flex items-start gap-3 text-sm text-muted sm:mb-8 sm:items-center"
+        className="mb-6 flex items-start gap-3 text-sm text-muted sm:mb-8 sm:items-center short:mb-3"
       >
         <span className="relative mt-1.5 flex h-2 w-2 shrink-0 sm:mt-0">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
@@ -71,7 +71,7 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         {t.profile.heroLine}
       </motion.div>
 
-      <h1 data-depth="2" className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+      <h1 data-depth="2" className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] short:text-[clamp(2.25rem,min(11vw,17svh),7.5rem)]">
         <NameSwap
           names={NAMES}
           label={profile.name}
@@ -88,7 +88,7 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.55, ease: EASE }}
-        className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:mt-8 sm:text-xl"
+        className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:mt-8 sm:text-xl short:mt-4 short:max-w-2xl short:text-sm"
       >
         {t.hero.tagline}
       </motion.p>
@@ -97,7 +97,7 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.7, ease: EASE }}
-        className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 short:mt-4"
       >
         <Button onClick={() => scrollTo("projects")} icon={<ArrowRight className="h-4 w-4" />}>
           {t.hero.viewProjects}
