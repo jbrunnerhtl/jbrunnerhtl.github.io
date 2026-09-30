@@ -131,7 +131,7 @@
 
   Review every screenshot, and fix and re-shoot anything broken. Verify that the matrix is clean and that no page errors are logged.
 - [x] 8.3 Commit locally ("Remove leftovers of the space journey"). Report to the owner: screenshots of the key views, what changed, and the German copy to review. The owner merges and pushes.
-- [ ] 8.4 At archive time, after `improve-search-visibility` is archived:
+- [x] 8.4 At archive time, after `improve-search-visibility` is archived:
   - delete the empty `openspec/specs/station-journey/`
   - update the `Purpose` of `canvas-3d-experience` and `portfolio-ui`
   - verify with `openspec validate --specs`

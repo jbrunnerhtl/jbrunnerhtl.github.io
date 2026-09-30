@@ -60,4 +60,4 @@
   - Bing Webmaster Tools: import from Google Search Console
 
   Verify that the owner has the checklist.
-- [ ] 5.4 After the owner's first deployment on the user site: `curl` checks that `https://jbrunnerhtl.github.io/robots.txt`, `/sitemap.xml`, `/<key>.txt`, `/en/` and `/de/` return 200, and that the `notify` job ran without a warning. Report the results to the owner.
+- [x] 5.4 After the owner's first deployment on the user site: `curl` checks that `https://jbrunnerhtl.github.io/robots.txt`, `/sitemap.xml`, `/<key>.txt`, `/en/` and `/de/` return 200, and that the `notify` job ran without a warning. Report the results to the owner.

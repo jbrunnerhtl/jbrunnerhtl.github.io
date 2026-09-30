@@ -11,44 +11,26 @@ Lies diese Datei zuerst, wenn du die Arbeit an der Portfolio-Seite fortsetzt. St
 - Next.js 16 weicht von älterem Wissen ab. Lies vor Next-spezifischem Code die Doku in `node_modules/next/dist/docs/` (siehe `AGENTS.md`).
 - Auf Port 3000 läuft ein eigener Node-Prozess des Besitzers. Den nicht anfassen; `npm run dev` kollidiert damit. Zum Ansehen: `npm run build`, dann `out/` statisch ausliefern (z. B. `python3 -m http.server 3200` im Ordner `out`).
 
-## Stand der Branches
+## Stand
 
-- `main`: alte Space-Journey-Seite (live unter `https://jbrunnerhtl.github.io/personal-wesite3.0/`).
-- `feature/improve-search-visibility`: SEO-Change (ein Commit, `1d811c9`).
-- `feature/portfolio-redesign`: baut auf dem SEO-Branch auf und enthält **beides**, SEO und das neue Layout nach dem Vorbild von hamishw.com. Das ist der Branch, der gemergt werden soll. Nichts davon ist gepusht.
+- Das Redesign (Layout nach dem Vorbild von hamishw.com) und die SEO-Änderungen sind gemergt (PR #7) und live unter `https://jbrunnerhtl.github.io/`. Das Repo heißt jetzt `jbrunnerhtl.github.io` und ist damit die User-Site.
+- Live geprüft am 30.09.2026: `robots.txt` und `sitemap.xml` (14 URLs) an der Host-Wurzel, IndexNow-Key-Datei, alle Projektseiten, das Vorschaubild und die 404-Seite. Der `notify`-Job (IndexNow) lief laut Besitzer grün.
+- Beide OpenSpec-Changes sind archiviert und in die Specs übernommen (`2026-09-30-improve-search-visibility`, `2026-09-30-redesign-portfolio-layout`). Es gibt keine offenen Changes. Die Capability `station-journey` ist entfernt.
+- Aktuelle Specs in `openspec/specs/`: `canvas-3d-experience` (Hero-Sphere), `portfolio-ui`, `project-showcase`, `project-pages`, `search-engine-optimization`, `site-deployment`.
 
-## Offene OpenSpec-Changes
+## Was der Besitzer eventuell noch tun muss
 
-### `improve-search-visibility` (14/15 Tasks)
+Beim Archivieren waren noch keine Verifizierungs-Tags live. Falls noch nicht erledigt:
 
-Umzug auf die User-Site `https://jbrunnerhtl.github.io/`, Google- und Bing-Verifizierung (Tags auch auf `/`), IndexNow-Job `notify` im Workflow (Key `3c0d0bc384bd907c591dbd5a96780cba`, Datei `public/<key>.txt`) und reicheres JSON-LD.
+1. Die neue Adresse setzen: im Feld „Website“ des GitHub-Profils, als Homepage des Repos und als Link im Profil-README (Repo `jbrunnerhtl/jbrunnerhtl`).
+2. Google Search Console: Property vom Typ URL-Präfix `https://jbrunnerhtl.github.io/`, den Token als Repo-Variable `GOOGLE_SITE_VERIFICATION` anlegen, den Workflow neu starten, bestätigen, `sitemap.xml` einreichen und die Indexierung beantragen.
+3. Bing Webmaster Tools: die Seite aus der Google Search Console importieren (oder die Repo-Variable `BING_SITE_VERIFICATION` setzen).
 
-- Offen: **Task 5.4**. Nach dem ersten Deploy auf der User-Site per `curl` prüfen, dass `/robots.txt`, `/sitemap.xml`, `/<key>.txt`, `/en/` und `/de/` mit 200 antworten und der `notify`-Job ohne Warnung lief.
+Prüfen, ob die Tags live sind:
 
-### `redesign-portfolio-layout` (35/36 Tasks)
-
-Neues Layout: Seitenleiste, Hero mit Displacement-Sphere (three.js/r3f), sechs Projekt-Sections mit Code-Mockups (shiki beim Build), Detailseiten `/<lang>/projects/<slug>/`, Light/Dark-Mode, 404 und OG-Bild im neuen Look.
-
-- Offen: **Task 8.4**, erst beim Archivieren und erst nachdem `improve-search-visibility` archiviert ist:
-  - das leere `openspec/specs/station-journey/` löschen,
-  - den `Purpose` von `canvas-3d-experience` und `portfolio-ui` anpassen,
-  - mit `openspec validate --specs` prüfen.
-- Das SEO-Delta dieser Change setzt den Stand nach `improve-search-visibility` voraus. Deshalb **zuerst** die SEO-Change archivieren, **danach** das Redesign.
-
-## Was der Besitzer noch tun muss (Reihenfolge wichtig)
-
-1. `feature/portfolio-redesign` pushen und einen PR nach `main` öffnen, noch nicht mergen.
-2. Das Repo auf GitHub in `jbrunnerhtl.github.io` umbenennen. Lokal: `git remote set-url origin git@github.com:jbrunnerhtl/jbrunnerhtl.github.io.git`.
-3. Direkt danach den PR mergen. Der Deploy geht dann auf `https://jbrunnerhtl.github.io/`.
-4. Die neue Adresse setzen: im Feld „Website“ des GitHub-Profils, als Homepage des Repos und als Link im Profil-README (Repo `jbrunnerhtl/jbrunnerhtl`).
-5. Google Search Console: Property vom Typ URL-Präfix, den Token als Repo-Variable `GOOGLE_SITE_VERIFICATION` anlegen, den Workflow neu starten, bestätigen, `sitemap.xml` einreichen und die Indexierung beantragen.
-6. Bing Webmaster Tools: die Seite aus der Google Search Console importieren.
-
-Sagt der Besitzer, dass der Deploy durch ist:
-
-1. `/opsx:apply improve-search-visibility`, um Task 5.4 zu prüfen.
-2. `/opsx:archive` für `improve-search-visibility`.
-3. `/opsx:archive` für `redesign-portfolio-layout`, inklusive Task 8.4.
+```
+curl -s https://jbrunnerhtl.github.io/ | grep -o 'google-site-verification\|msvalidate.01'
+```
 
 ## Fakten, die man sonst neu herausfinden müsste
 
