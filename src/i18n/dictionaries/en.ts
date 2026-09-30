@@ -11,6 +11,7 @@ export const en = {
   },
   profile: {
     location: "Upper Austria",
+    jobTitle: "Software Development Student",
     heroLine: "Software Development Student · HTL Leonding, Upper Austria",
   },
   nav: {

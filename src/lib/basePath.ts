@@ -1,5 +1,5 @@
-// Sub-path the site is served from, e.g. "/personal-wesite3.0" on GitHub Pages project sites.
-// Set at build time by the deploy workflow; empty for local builds and custom domains.
+// Sub-path the site is served from: empty on the jbrunnerhtl.github.io user site, custom domains
+// and local builds; "/<repo>" on GitHub Pages project sites. Set at build time by the deploy workflow.
 // next/link and metadata handle this automatically; plain <a> hrefs and history calls must use it.
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 

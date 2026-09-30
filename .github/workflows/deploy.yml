@@ -2,7 +2,8 @@
 # GitHub Pages artifact flow. Requires Settings → Pages → Source: "GitHub Actions".
 #
 # Least privilege: the build job runs third-party code (npm packages) and only gets read access;
-# the deploy job holds the Pages permissions but never checks out or runs repository code.
+# the deploy job holds the Pages permissions but never checks out or runs repository code; the
+# notify job has no permissions at all.
 # Actions are pinned to commit SHAs (tags can be moved); Dependabot proposes updates.
 name: Deploy static site
 
@@ -16,6 +17,11 @@ on:
 
 permissions: {}
 
+env:
+  # IndexNow key (public by design): search engines check it against the key file the site serves,
+  # public/<key>.txt. Change both together.
+  INDEXNOW_KEY: 3c0d0bc384bd907c591dbd5a96780cba
+
 # Never cancel a deployment halfway; a newer run waits for the current one.
 concurrency:
   group: pages
@@ -26,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      site: ${{ steps.base.outputs.site }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -46,7 +54,7 @@ jobs:
           npx tsc --noEmit
           npm run lint
 
-      # Project sites live under /<repo>/ (e.g. /personal-wesite3.0/); a <user>.github.io repo lives at /.
+      # This <user>.github.io repo is the user site and lives at /; project sites live under /<repo>/.
       # The public site URL (for canonical URLs, sitemap, structured data) is the Pages URL, unless
       # the repository variable SITE_URL names another one (e.g. a custom domain).
       - name: Compute base path and site URL
@@ -70,8 +78,18 @@ jobs:
           NEXT_PUBLIC_SITE_URL: ${{ steps.base.outputs.site }}
           # Optional: set the repository variable to the token Google Search Console shows.
           NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
+          # Optional: the token Bing Webmaster Tools shows for the HTML meta tag (not needed when the
+          # site is imported from Google Search Console).
+          NEXT_PUBLIC_BING_SITE_VERIFICATION: ${{ vars.BING_SITE_VERIFICATION }}
           # Read-only token, used server-side at build time to avoid GitHub API rate limits on shared runners.
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Check IndexNow key file
+        run: |
+          if [[ "$(cat "out/$INDEXNOW_KEY.txt" 2>/dev/null)" != "$INDEXNOW_KEY" ]]; then
+            echo "::error::out/$INDEXNOW_KEY.txt is missing or doesn't contain the key; add public/$INDEXNOW_KEY.txt"
+            exit 1
+          fi
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
@@ -89,3 +107,28 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  # Tells IndexNow search engines (Bing, and through it DuckDuckGo, Ecosia and Yahoo; Yandex, Seznam,
+  # Naver) that the pages changed. Only for new content: the daily rebuild just refreshes the stats.
+  # A failed notification is only a warning; the site is deployed either way.
+  notify:
+    needs: [build, deploy]
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Notify IndexNow
+        env:
+          SITE: ${{ needs.build.outputs.site }}
+        run: |
+          host="${SITE#https://}"; host="${host%%/*}"
+          body=$(printf '{"host":"%s","key":"%s","keyLocation":"%s/%s.txt","urlList":["%s/en/","%s/de/"]}' \
+            "$host" "$INDEXNOW_KEY" "$SITE" "$INDEXNOW_KEY" "$SITE" "$SITE")
+          echo "$body"
+          status=$(curl -sS -o response.txt -w '%{http_code}' --max-time 30 \
+            -H 'Content-Type: application/json; charset=utf-8' -d "$body" https://api.indexnow.org/indexnow) || status="no response"
+          if [[ "$status" == 200 || "$status" == 202 ]]; then
+            echo "IndexNow accepted the URLs (HTTP $status)."
+          else
+            echo "::warning::IndexNow notification failed (HTTP $status): $(cat response.txt 2>/dev/null)"
+          fi

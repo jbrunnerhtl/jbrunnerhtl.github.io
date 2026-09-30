@@ -12,6 +12,7 @@ export const de: Dictionary = {
   },
   profile: {
     location: "Oberösterreich",
+    jobTitle: "Schüler der Softwareentwicklung",
     heroLine: "Softwareentwicklung · HTL Leonding, Oberösterreich",
   },
   nav: {

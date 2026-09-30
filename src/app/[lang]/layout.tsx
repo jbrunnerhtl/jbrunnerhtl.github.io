@@ -9,7 +9,7 @@ import { LOCALES, hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import { OG_IMAGE_SIZE, SITE_URL, siteUrl } from "@/lib/site";
+import { OG_IMAGE_SIZE, SITE_URL, siteUrl, siteVerification } from "@/lib/site";
 
 // Prerender /en and /de; any other locale segment is a 404.
 export const dynamicParams = false;
@@ -24,7 +24,6 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
   if (!hasLocale(lang)) return {};
   const { meta, profile: copy } = await getDictionary(lang);
   const { profile } = PORTFOLIO_DATA;
-  const verification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
   const image = { url: siteUrl(`${lang}/og.png`), ...OG_IMAGE_SIZE, type: "image/png", alt: `${profile.name} — ${copy.heroLine}` };
   return {
     metadataBase: new URL(`${SITE_URL}/`),
@@ -48,7 +47,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       images: [image],
     },
     twitter: { card: "summary_large_image", title: meta.title, description: meta.ogDescription, images: [image] },
-    ...(verification ? { verification: { google: verification } } : {}),
+    verification: siteVerification(),
   };
 }
 

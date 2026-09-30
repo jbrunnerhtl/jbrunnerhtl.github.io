@@ -32,9 +32,12 @@ const GITHUB = "https://github.com/jbrunnerhtl";
 export const PORTFOLIO_DATA = {
   profile: {
     name: "Jan Brunner",
+    givenName: "Jan",
+    familyName: "Brunner",
     handle: "jbrunnerhtl",
     email: "brunnerjan1102@gmail.com",
     school: "HTL Leonding",
+    schoolUrl: "https://www.htl-leonding.at/",
     codingSince: 2022,
     githubUrl: GITHUB,
   },
