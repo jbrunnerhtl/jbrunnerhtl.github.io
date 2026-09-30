@@ -6,11 +6,11 @@ The fixed 3D background: a liquid chrome orb that follows scroll and pointer, re
 ## Requirements
 
 ### Requirement: Scroll-Driven Flight Through Space
-The system SHALL move the camera along a curved route through space as a pure function of the smoothed scroll position, so the same scroll position always shows the same place and view. Scrolling down SHALL fly forward along the route, scrolling up SHALL fly back, and no scrolling SHALL mean no flight. The route SHALL pass one waypoint per station. The camera SHALL slow down while a station is being held, without ever stopping while the user scrolls, and glide faster between stations; it SHALL look ahead along the route, turning smoothly with its curves. The flight SHALL feel like calm gliding: no speed streaks and no field-of-view changes. The scene SHALL NOT be dimmed by a full-screen scrim, and the station content supplies its own readable surfaces.
+The system SHALL move the camera along a straight route into the depth of space as a pure function of the smoothed scroll position, so the same scroll position always shows the same place and view. Scrolling down SHALL fly forward along the route, scrolling up SHALL fly back, and no scrolling SHALL mean no flight. The route SHALL pass one waypoint per station. The camera SHALL slow down while a station is being held, without ever stopping while the user scrolls, and glide faster between stations; the speed SHALL change smoothly between the two, without abrupt jumps. The camera SHALL look straight ahead along the route, with no turns or roll. The flight SHALL feel like calm gliding: no speed streaks and no field-of-view changes. The scene SHALL NOT be dimmed by a full-screen scrim, and the station content supplies its own readable surfaces.
 
 #### Scenario: User scrolls through the page
 - **WHEN** the user scrolls from the Hero to Contact
-- **THEN** the camera travels along the curved route, turning gently, slowing at each station and gliding faster in between, never standing still while scrolling, and without stutter
+- **THEN** the camera travels straight ahead along the route, easing down at each station and gliding faster in between, never standing still while scrolling, with no turns, roll, sudden speed changes or stutter
 
 #### Scenario: User scrolls back up
 - **WHEN** the user scrolls up to a position they visited before
