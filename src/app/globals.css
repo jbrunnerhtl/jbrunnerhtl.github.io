@@ -522,3 +522,10 @@ html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
   background: var(--accent);
   clip-path: polygon(0 0, 100% 0, 82% 100%, 12% 100%);
 }
+
+/* ---------- About ---------- */
+/* The handle, written top to bottom beside the picture (decorative outline lettering). */
+.about-handle {
+  writing-mode: vertical-rl;
+  -webkit-text-stroke-color: color-mix(in oklab, var(--fg) 35%, transparent);
+}

@@ -87,10 +87,10 @@
 
 ## 5. About, skills and timeline, contact
 
-- [ ] 5.1 Rebuild `AboutSection`: a `DecoderText` greeting ("Hi there"/"Servus"), the existing paragraphs, the stats row (count-up, final values in the HTML), and a "Send me a message" link to `#contact`. The profile picture sits in an accent frame with the vertical, outlined handle lettering (`aria-hidden`). Verify in WebKit in both modes and at 390px, and check that the stats in `out/de/index.html` contain the final numbers.
-- [ ] 5.2 Build `SkillsTimeline`: the timeline and the skill groups as accessible static lists, side by side on wide screens and stacked on narrow ones. Delete `SkillMarquee`. Verify that there is no overflow from 320 to 2560px, and that the accessibility tree has one named list per group.
-- [ ] 5.3 Rebuild `ContactSection`: a `DecoderText` heading, the text, the email with copy button ("Copied!" announcement kept), an angled mail button, GitHub and the follower count, plus a footer (©, school, region). Verify that the copy flow works in WebKit and that the live region announces it.
-- [ ] 5.4 Commit locally ("Restyle about, skills and contact"). Verify that the build passes.
+- [x] 5.1 Rebuild `AboutSection`: a `DecoderText` greeting ("Hi there"/"Servus"), the existing paragraphs, the stats row (count-up, final values in the HTML), and a "Send me a message" link to `#contact`. The profile picture sits in an accent frame with the vertical, outlined handle lettering (`aria-hidden`). Verify in WebKit in both modes and at 390px, and check that the stats in `out/de/index.html` contain the final numbers.
+- [x] 5.2 Build `SkillsTimeline`: the timeline and the skill groups as accessible static lists, side by side on wide screens and stacked on narrow ones. Delete `SkillMarquee`. Verify that there is no overflow from 320 to 2560px, and that the accessibility tree has one named list per group.
+- [x] 5.3 Rebuild `ContactSection`: a `DecoderText` heading, the text, the email with copy button ("Copied!" announcement kept), an angled mail button, GitHub and the follower count, plus a footer (©, school, region). Verify that the copy flow works in WebKit and that the live region announces it.
+- [x] 5.4 Commit locally ("Restyle about, skills and contact"). Verify that the build passes.
 
 ## 6. Project detail pages
 

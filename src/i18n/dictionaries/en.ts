@@ -47,9 +47,10 @@ export const en = {
     scrollHint: "Scroll to projects",
   },
   about: {
-    label: "About",
-    title: "A student who likes to",
-    titleHighlight: "build things end to end.",
+    label: "About me",
+    greeting: "Hi there",
+    message: "Send me a message",
+    photoAlt: "Jan Brunner's profile picture: a glowing spiral galaxy",
     p1Before: "I'm Jan Brunner, a software development student at ",
     p1Highlight: "HTL Leonding",
     p1After:
@@ -150,8 +151,7 @@ export const en = {
   },
   contact: {
     label: "Contact",
-    title: "Let's build",
-    titleHighlight: "something.",
+    heading: "Let's build something.",
     text: "Open to collaborations, internships and interesting problems. Write me an email or find me on GitHub.",
     email: "Write an email",
     copy: "Copy email address",

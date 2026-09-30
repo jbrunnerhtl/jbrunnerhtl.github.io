@@ -48,8 +48,9 @@ export const de: Dictionary = {
   },
   about: {
     label: "Über mich",
-    title: "Ein Schüler, der Dinge gern",
-    titleHighlight: "von Anfang bis Ende baut.",
+    greeting: "Servus",
+    message: "Schreib mir eine Nachricht",
+    photoAlt: "Profilbild von Jan Brunner: eine leuchtende Spiralgalaxie",
     p1Before: "Ich bin Jan Brunner und lerne Softwareentwicklung an der ",
     p1Highlight: "HTL Leonding",
     p1After:
@@ -150,8 +151,7 @@ export const de: Dictionary = {
   },
   contact: {
     label: "Kontakt",
-    title: "Lass uns",
-    titleHighlight: "etwas bauen.",
+    heading: "Lass uns etwas bauen.",
     text: "Offen für Zusammenarbeit, Praktika und spannende Probleme. Schreib mir eine E-Mail oder finde mich auf GitHub.",
     email: "E-Mail schreiben",
     copy: "E-Mail-Adresse kopieren",

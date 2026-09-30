@@ -21,7 +21,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <StructuredData lang={lang as Locale} />
       <HeroSection />
       <ProjectsSection repoCount={stats.publicRepos} mockups={mockups} />
-      <AboutSection />
+      <AboutSection stats={stats} />
       <SkillsSection />
       <ContactSection followers={stats.followers} />
     </main>
