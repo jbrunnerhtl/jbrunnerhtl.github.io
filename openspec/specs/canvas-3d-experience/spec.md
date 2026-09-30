@@ -5,27 +5,8 @@ The fixed 3D background: a liquid chrome orb that follows scroll and pointer, re
 
 ## Requirements
 
-### Requirement: GitHub Logo Companion
-The system SHALL render a three-dimensional GitHub logo as a companion object in the fixed background layer behind the page content. The logo SHALL use the same mark as the site's GitHub icon, given depth, and a metallic, iridescent material lit by a procedural studio environment (no downloaded HDR map). The companion SHALL appear only at the start of the journey, beside the hero text, facing the viewer: while it rests there its idle sway and pointer lean SHALL stay within a limited angle, so it never turns edge-on. The companion is decoration only. It SHALL NOT capture pointer events, so it never blocks interaction with the content, and it SHALL NOT act as a link.
-
-#### Scenario: User moves the pointer
-- **WHEN** the user moves the mouse anywhere over the page
-- **THEN** the logo leans gently towards the pointer on top of a slow idle sway, using frame-rate-independent damping, and stays readable face-on
-
-#### Scenario: User scrolls away from the hero and back
-- **WHEN** the user scrolls from the hero into the journey, and later scrolls back up to the hero
-- **THEN** the logo flies off ahead into the distance, spinning and fading out, and is gone at the next station; scrolling back up flies it in again along the same path until it rests beside the hero text
-
-#### Scenario: User clicks where the logo is drawn
-- **WHEN** the user clicks or taps on the area where the companion is rendered
-- **THEN** the click reaches the page content underneath, and no navigation to GitHub happens
-
-#### Scenario: User switches color mode
-- **WHEN** the operating system prefers a light color scheme
-- **THEN** the environment lighting and the space world keep their single dark palette, since the site has no light mode
-
 ### Requirement: Scroll-Driven Flight Through Space
-The system SHALL move the camera along a curved route through space as a pure function of the smoothed scroll position, so the same scroll position always shows the same place and view. Scrolling down SHALL fly forward along the route, scrolling up SHALL fly back, and no scrolling SHALL mean no flight. The route SHALL pass one waypoint per station. The camera SHALL slow down while a station is being held, without ever stopping while the user scrolls, and glide faster between stations; it SHALL look ahead along the route, turning smoothly with its curves. The flight SHALL feel like calm gliding: no speed streaks and no field-of-view changes. The companion's fly-off SHALL be a function of the route position too, so it plays backwards when scrolling up, and it SHALL trail slightly and bank gently while the flight speeds up. The scene SHALL NOT be dimmed by a full-screen scrim, and the station content supplies its own readable surfaces.
+The system SHALL move the camera along a curved route through space as a pure function of the smoothed scroll position, so the same scroll position always shows the same place and view. Scrolling down SHALL fly forward along the route, scrolling up SHALL fly back, and no scrolling SHALL mean no flight. The route SHALL pass one waypoint per station. The camera SHALL slow down while a station is being held, without ever stopping while the user scrolls, and glide faster between stations; it SHALL look ahead along the route, turning smoothly with its curves. The flight SHALL feel like calm gliding: no speed streaks and no field-of-view changes. The scene SHALL NOT be dimmed by a full-screen scrim, and the station content supplies its own readable surfaces.
 
 #### Scenario: User scrolls through the page
 - **WHEN** the user scrolls from the Hero to Contact
@@ -37,7 +18,7 @@ The system SHALL move the camera along a curved route through space as a pure fu
 
 #### Scenario: User starts and stops scrolling
 - **WHEN** the user starts scrolling after a pause and then stops
-- **THEN** near the hero the companion falls slightly behind and banks while the flight accelerates, then catches up and settles level once the flight stops
+- **THEN** the camera accelerates and slows with the smoothed scroll, and the scene comes to rest without a jump once scrolling stops
 
 #### Scenario: User jumps to a section from the navigation
 - **WHEN** the user selects a section in the navbar and the page smooth-scrolls there
@@ -45,7 +26,7 @@ The system SHALL move the camera along a curved route through space as a pure fu
 
 #### Scenario: Viewport changes layout bucket
 - **WHEN** a tablet is rotated or the window is resized across a layout boundary
-- **THEN** the companion and the galaxies switch to that layout's size and placement
+- **THEN** the galaxies switch to that layout's size and placement
 
 ### Requirement: On-Demand Rendering
 The system SHALL render the 3D scene only when it can change on screen: at full frame rate while the hero is visible, at full frame rate while the user scrolls or moves the pointer anywhere on the page (plus a short settle period), and not at all otherwise. The scene's animation clock SHALL advance only on rendered frames, so pausing never causes a visible jump.
