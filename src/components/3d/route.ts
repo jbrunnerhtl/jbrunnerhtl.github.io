@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { seededRandom } from "./random";
 
 /** Distance between two stations along the route. */
 const SPACING = 42;
@@ -11,20 +10,11 @@ export type Route = {
   count: number;
 };
 
-/** A gently winding route through space with one waypoint per station. Deterministic. */
+/** A straight route into the depth of space with one evenly spaced waypoint per station. */
 export function buildRoute(stationCount: number): Route {
-  const random = seededRandom(2026);
   const count = Math.max(stationCount, 2);
-  const points = Array.from({ length: count }, (_, i) =>
-    i === 0
-      ? new THREE.Vector3(0, 0, 0)
-      : new THREE.Vector3(
-          Math.sin(i * 1.9) * 7 + (random() - 0.5) * 3,
-          Math.cos(i * 1.3) * 3 + (random() - 0.5) * 1.5,
-          -i * SPACING,
-        ),
-  );
-  // Uniform (not arc-length) parameterisation: getPoint(i / (count - 1)) is exactly waypoint i.
+  const points = Array.from({ length: count }, (_, i) => new THREE.Vector3(0, 0, -i * SPACING));
+  // Evenly spaced collinear points: getPoint(i / (count - 1)) is exactly waypoint i.
   return { curve: new THREE.CatmullRomCurve3(points, false, "centripetal"), points, count };
 }
 

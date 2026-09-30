@@ -38,6 +38,27 @@ export type Phase = "before" | "arrive" | "hold" | "leave" | "after";
 
 type Listener = () => void;
 
+/** A point of the scroll → route map: scroll offset, route position and speed (du/dpx) there. */
+type Knot = { px: number; u: number; m: number };
+
+/**
+ * Route position between two knots: a cubic Hermite through both, matching the speed at each end.
+ * Holds (equal speeds at both ends) come out linear; the flights between them speed up and slow
+ * down smoothly. The end speeds are limited to 3× the average (Fritsch–Carlson), so u never runs
+ * backwards.
+ */
+function segmentU(a: Knot, b: Knot, px: number) {
+  const span = b.px - a.px;
+  if (span <= 0) return b.u;
+  const t = (px - a.px) / span;
+  const du = b.u - a.u;
+  const m0 = Math.min(a.m * span, 3 * du);
+  const m1 = Math.min(b.m * span, 3 * du);
+  const t2 = t * t;
+  const t3 = t2 * t;
+  return a.u + (t3 - 2 * t2 + t) * m0 + (3 * t2 - 2 * t3) * du + (t3 - t2) * m1;
+}
+
 export const journeyStore = {
   enabled: false,
   stations: [] as Station[],
@@ -48,8 +69,8 @@ export const journeyStore = {
   version: 0,
   /** Section of the station being held, for the navbar. */
   activeSection: null as string | null,
-  /** Piecewise-linear map from scroll offset to route position (see routeU). */
-  knots: [] as { px: number; u: number }[],
+  /** Map from scroll offset to route position: two knots per station hold (see routeU). */
+  knots: [] as Knot[],
   listeners: new Set<Listener>(),
 
   subscribe(fn: Listener) {
@@ -101,12 +122,15 @@ export const journeyStore = {
     const last = stations[stations.length - 1];
     journeyStore.total = last ? last.start + last.arrive + last.hold : 0;
     // Station i is centred on u = i: its hold covers i ± HOLD_U/2 (the first and last only half),
-    // and the flight in between covers the rest, faster.
+    // and the flight in between covers the rest, faster. Both knots carry the hold's speed.
     journeyStore.knots = stations.flatMap((st, i) => {
       const holdStart = st.start + st.arrive;
+      const u0 = i === 0 ? 0 : i - HOLD_U / 2;
+      const u1 = i === stations.length - 1 ? i : i + HOLD_U / 2;
+      const m = (u1 - u0) / st.hold;
       return [
-        { px: holdStart, u: i === 0 ? 0 : i - HOLD_U / 2 },
-        { px: holdStart + st.hold, u: i === stations.length - 1 ? i : i + HOLD_U / 2 },
+        { px: holdStart, u: u0, m },
+        { px: holdStart + st.hold, u: u1, m },
       ];
     });
     journeyStore.version++;
@@ -137,17 +161,15 @@ export const journeyStore = {
 
   /**
    * Continuous route position: i in the middle of station i's hold, moving slowly through the
-   * hold and faster between stations. A pure function of the scroll offset, never standing still.
+   * hold and faster between stations, with smooth changes of speed. A pure function of the scroll
+   * offset, never standing still.
    */
   routeU(px: number) {
     const k = journeyStore.knots;
     if (!k.length) return 0;
     if (px <= k[0].px) return k[0].u;
     for (let i = 1; i < k.length; i++) {
-      if (px <= k[i].px) {
-        const span = k[i].px - k[i - 1].px;
-        return span > 0 ? k[i - 1].u + ((px - k[i - 1].px) / span) * (k[i].u - k[i - 1].u) : k[i].u;
-      }
+      if (px <= k[i].px) return segmentU(k[i - 1], k[i], px);
     }
     return k[k.length - 1].u;
   },
@@ -159,8 +181,15 @@ export const journeyStore = {
     if (u <= k[0].u) return k[0].px;
     for (let i = 1; i < k.length; i++) {
       if (u <= k[i].u) {
-        const span = k[i].u - k[i - 1].u;
-        return span > 0 ? k[i - 1].px + ((u - k[i - 1].u) / span) * (k[i].px - k[i - 1].px) : k[i].px;
+        // routeU is monotone within a segment, so bisection finds the offset.
+        let lo = k[i - 1].px;
+        let hi = k[i].px;
+        for (let n = 0; n < 32 && hi - lo > 0.01; n++) {
+          const mid = (lo + hi) / 2;
+          if (segmentU(k[i - 1], k[i], mid) < u) lo = mid;
+          else hi = mid;
+        }
+        return (lo + hi) / 2;
       }
     }
     return k[k.length - 1].px;

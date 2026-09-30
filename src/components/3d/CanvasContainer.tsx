@@ -15,16 +15,14 @@ import { journeyStore } from "@/lib/journeyStore";
 import { isWebGLAvailable } from "@/lib/webgl";
 import { motionStore } from "@/lib/motionStore";
 
-const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), ahead: new THREE.Vector3(), look: new THREE.Vector3() };
+const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), look: new THREE.Vector3() };
 
 /**
- * Flies the camera along the route with the scroll position (slowly through each held station,
- * faster in between), looking ahead along the curve with a slight roll into turns. Also advances the
- * pausable scene clock. Mounted before the scene objects, so they read this frame's camera and time.
+ * Flies the camera straight along the route with the scroll position (slowly through each held
+ * station, faster in between), looking ahead. Also advances the pausable scene clock.
+ * Mounted before the scene objects, so they read this frame's camera and time.
  */
-
 function FlightDriver({ route }: { route: Route }) {
-
   useFrame((state, delta) => {
     motionStore.sceneTime += Math.min(delta, 1 / 20);
     const u = journeyStore.stations.length ? journeyStore.routeU(motionStore.scrollPx) : 0;
@@ -32,12 +30,9 @@ function FlightDriver({ route }: { route: Route }) {
     const t = Math.min(u / (route.count - 1), 1);
     route.curve.getPoint(t, flight.pos);
     route.curve.getTangent(t, flight.tangent);
-    route.curve.getTangent(Math.min(t + 0.02, 1), flight.ahead);
     const cam = state.camera;
     cam.position.copy(flight.pos);
     cam.lookAt(flight.look.copy(flight.pos).add(flight.tangent));
-    // Lean into the turn: roll by how much the heading swings sideways just ahead.
-    cam.rotateZ(THREE.MathUtils.clamp((flight.tangent.x - flight.ahead.x) * 3, -0.1, 0.1));
   });
   return null;
 }

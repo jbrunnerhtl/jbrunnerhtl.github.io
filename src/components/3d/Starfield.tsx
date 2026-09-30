@@ -10,7 +10,7 @@ import { seededRandom } from "./random";
 const H = 30;
 
 // Every star is wrapped into a box around the camera on all three axes, so the field never runs
-// out in any direction the route turns. Stars fade in at the box edge and out before the lens.
+// out in any direction. Stars fade in at the box edge and out before the lens.
 const vertexShader = /* glsl */ `
   attribute vec3 aColor;
   attribute float aSize;
