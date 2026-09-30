@@ -356,3 +356,169 @@ section[id] {
     animation: none;
   }
 }
+
+/* ---------- Code mockups ---------- */
+/* Shiki emits both modes as variables; pick the active one. Terminals stay dark in either mode. */
+.shiki,
+.shiki span {
+  color: var(--shiki-dark);
+}
+:root[data-theme="light"] .shiki,
+:root[data-theme="light"] .shiki span {
+  color: var(--shiki-light);
+}
+:root[data-theme="light"] .mockup-terminal .shiki,
+:root[data-theme="light"] .mockup-terminal .shiki span {
+  color: var(--shiki-dark);
+}
+
+.mockup-code {
+  --code-bg: #151718;
+  background: var(--code-bg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+:root[data-theme="light"] .mockup-code {
+  --code-bg: #ffffff;
+}
+.mockup-terminal .mockup-code,
+:root[data-theme="light"] .mockup-terminal .mockup-code {
+  --code-bg: #0c0d0e;
+}
+@media (min-width: 640px) {
+  .mockup-code {
+    font-size: 0.8125rem;
+  }
+}
+.mockup-code pre {
+  margin: 0;
+  padding: 1rem 1.25rem 1.25rem;
+  width: max-content;
+  min-width: 100%;
+  background: transparent !important;
+  tab-size: 4;
+}
+/* Home page: a fixed-height window into the code that fades out at the bottom. */
+.mockup-code-clip {
+  max-height: 22rem;
+  overflow-y: hidden;
+  mask-image: linear-gradient(to bottom, #000 78%, transparent);
+}
+
+.mockup-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 2.25rem;
+  padding: 0 0.875rem;
+  background: color-mix(in oklab, var(--surface) 80%, var(--fg) 6%);
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+}
+.mockup-bar-dark {
+  background: #1b1d1f;
+  border-bottom-color: rgb(255 255 255 / 0.08);
+  color: #8c8c8c;
+}
+
+.mockup-window {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--line);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.45);
+}
+:root[data-theme="light"] .mockup-window {
+  box-shadow: 0 30px 70px -25px rgb(0 0 0 / 0.25);
+}
+
+/* Laptop: screen in a dark bezel on a thin base; the lid swings open when revealed. */
+.mockup-laptop {
+  perspective: 1800px;
+}
+.mockup-lid {
+  transform-origin: 50% 100%;
+  padding: 0.6rem 0.6rem 0.9rem;
+  border-radius: 1rem 1rem 0.25rem 0.25rem;
+  background: #1c1d1f;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  box-shadow: 0 30px 80px -25px rgb(0 0 0 / 0.5);
+}
+.mockup-screen {
+  overflow: hidden;
+  border-radius: 0.35rem;
+}
+.mockup-base {
+  position: relative;
+  height: 0.9rem;
+  margin: 0 -7%;
+  border-radius: 0 0 1.25rem 1.25rem;
+  background: linear-gradient(to bottom, #3a3c3f, #1e1f21);
+}
+.mockup-base::after {
+  /* The notch for opening the lid (decorative). */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 14%;
+  height: 0.3rem;
+  translate: -50% 0;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: #141516;
+}
+
+html.js [data-reveal="device"] {
+  opacity: 0;
+  translate: 0 2.5rem;
+  transition:
+    opacity 1s var(--ease-out-expo),
+    translate 1.2s var(--ease-out-expo);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+html.js [data-reveal="device"][data-revealed] {
+  opacity: 1;
+  translate: 0 0;
+}
+html.js .mockup-laptop[data-reveal="device"] {
+  translate: 0 0;
+}
+html.js .mockup-laptop[data-reveal="device"] .mockup-lid {
+  rotate: x -88deg;
+  transition: rotate 1.6s var(--ease-out-expo) 0.15s;
+}
+html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
+  rotate: x 0deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal="device"],
+  html.js .mockup-laptop[data-reveal="device"] .mockup-lid {
+    opacity: 1;
+    translate: 0 0;
+    rotate: none;
+    transition: none;
+  }
+}
+
+/* ---------- Section divider ---------- */
+/* A thin accent line with a thicker, notched bar hanging under its start (decorative). */
+.section-divider {
+  position: relative;
+  display: block;
+  width: 5.5rem;
+  height: 1px;
+  background: var(--accent);
+}
+.section-divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3.25rem;
+  height: 0.5rem;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 12% 100%);
+}

@@ -82,37 +82,46 @@ export const de: Dictionary = {
     intro:
       "Sechs Repositories, die das meiste abdecken, womit ich arbeite: Desktop-Apps, Web-Apps und Backends.",
     live: "Live",
+    view: "Projekt ansehen",
+    moreTitle: "Kleinere Projekte und Schularbeiten auf GitHub.",
+    mockupLabel: "Codeausschnitt aus {file} von {title}",
     team: "Team · {n}",
     more: "Weitere Repositories",
     all: "Alle {n} Repositories",
     items: {
       "driving-planner": {
         title: "Driving Planner",
+        summary: "Eine Full-Stack-Web-App, die Fahrschüler mit Fahrschulen in der Nähe verbindet und ihre Ausbildung begleitet.",
         description:
           "Eine Full-Stack-Web-App für Fahrschüler und Fahrschulen. Man findet Fahrschulen in der Nähe (Geocoding über OpenStreetMap), meldet sich für Programme an, erfasst gefahrene Kilometer, Termine und Aufgaben und bewertet Fahrschulen, während Fahrschulen ihre eigene Seite verwalten. Ein Vue-3-Frontend mit PrimeVue, Pinia und Deutsch/Englisch spricht mit einer Express-REST-API mit SQLite, JWT und Swagger-Doku, gestartet mit Docker Compose.",
       },
       flashcards: {
         title: "Flashcards",
+        summary: "Eine JavaFX-Lern-App, die Karten, bei denen du dir schwertust, öfter abfragt.",
         description:
           "Eine JavaFX-Desktop-App zum Lernen mit digitalen Karteikarten, sortiert in Stapel. Sie wählt Karten mit einem gewichteten Auswahl-Algorithmus, zählt Lern-Streaks und Statistiken, importiert und exportiert Stapel und speichert sie als JSON mit Jackson. Gebaut nach dem MVP-Pattern, auf Deutsch und Englisch, mit hellem und dunklem Theme und Tests mit JUnit und Mockito.",
       },
       "vector-viewer": {
         title: "3D-Vektor-Viewer",
+        summary: "3D-Vektoren mit Schiebereglern bauen und live um eine kreisende Kamera beobachten.",
         description:
           "Ein interaktiver 3D-Vektor-Viewer in C# mit Raylib-cs. Vektoren hinzufügen, Start- und Endpunkt per Slider setzen und live in einem mitwachsenden, beschrifteten Koordinatengitter mit kreisender Kamera verfolgen.",
       },
       crow: {
         title: "Crow Demo Backend",
+        summary: "Eine kleine C++-REST-API für Laptops und Server auf Basis des Crow-Frameworks.",
         description:
           "Ein REST-Backend in C++ auf dem Crow-Framework, das Geräte (Laptops und Server) aus einem In-Memory-Speicher nach dem Repository-Pattern ausliefert. Gebaut mit CMake FetchContent.",
       },
       "driving-tracker": {
         title: "DrivingTracker",
+        summary: "Ein JavaFX-Fahrtenbuch für Übungsfahrten, das den Fortschritt zum L17-Kilometerziel zeigt.",
         description:
           "Eine JavaFX-Desktop-App, um Fahrten zu erfassen und Fahrstatistiken anzuzeigen. Die Daten liegen in einer eingebetteten H2-Datenbank, dazu gibt es JUnit-Tests und eine eigene Dokumentationsseite.",
       },
       rpn: {
         title: "RPN-Rechner",
+        summary: "Ein UPN-Taschenrechner in C# und Avalonia, der den Stack auch als Graph zeichnen kann.",
         description:
           "Ein Desktop-Rechner für umgekehrte polnische Notation in C# mit Avalonia UI. Er hat Stack-Operationen, Tastatureingabe, eine Graph-Ansicht und getrennte Projekte für Core, Logik und Tests.",
       },

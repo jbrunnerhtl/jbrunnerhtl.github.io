@@ -82,37 +82,46 @@ export const en = {
     intro:
       "Six repositories covering most of what I work with: desktop apps, web apps and backends.",
     live: "Live",
+    view: "View project",
+    moreTitle: "Smaller projects and school work on GitHub.",
+    mockupLabel: "Code excerpt from {file} of {title}",
     team: "Team · {n}",
     more: "More repositories",
     all: "All {n} repositories",
     items: {
       "driving-planner": {
         title: "Driving Planner",
+        summary: "A full-stack web app that connects learner drivers with nearby driving schools and follows their training.",
         description:
           "A full-stack web app for learner drivers and driving schools. Users find nearby schools (geocoded via OpenStreetMap), enroll in programs, log driven kilometers, events and tasks, and rate schools, while schools manage their own page. Vue 3 with PrimeVue, Pinia and English/German i18n talks to an Express REST API with SQLite, JWT and Swagger docs, all started with Docker Compose.",
       },
       flashcards: {
         title: "Flashcards",
+        summary: "A JavaFX learning app that asks the cards you struggle with more often.",
         description:
           "A JavaFX desktop app for learning with digital flashcards sorted into decks. It picks cards with a weighted selection algorithm, tracks study streaks and statistics, imports and exports decks and stores them as JSON with Jackson. Built with the MVP pattern, in English and German, with light and dark themes and JUnit and Mockito tests.",
       },
       "vector-viewer": {
         title: "3D Vector Viewer",
+        summary: "Build 3D vectors with sliders and watch them update live around an orbiting camera.",
         description:
           "An interactive 3D vector viewer in C# with Raylib-cs. Add vectors, set their start and end points with sliders and watch them update live in an auto-scaling, labeled coordinate grid under an orbiting camera.",
       },
       crow: {
         title: "Crow Demo Backend",
+        summary: "A small C++ REST API for laptops and servers, built on the Crow framework.",
         description:
           "A C++ REST backend on the Crow framework that serves devices (laptops and servers) from a repository-pattern in-memory store. Built with CMake FetchContent.",
       },
       "driving-tracker": {
         title: "DrivingTracker",
+        summary: "A JavaFX logbook for practice drives that shows the progress towards the L17 kilometre goal.",
         description:
           "A JavaFX desktop app for logging trips and viewing driving statistics. It stores data in an embedded H2 database and has JUnit tests and a dedicated documentation site.",
       },
       rpn: {
         title: "RPN Calculator",
+        summary: "A Reverse Polish Notation calculator in C# and Avalonia that can also plot the stack as a graph.",
         description:
           "A desktop Reverse Polish Notation calculator in C# with Avalonia UI. It has stack operations, keyboard input, a graph view and separate core, logic and test projects.",
       },

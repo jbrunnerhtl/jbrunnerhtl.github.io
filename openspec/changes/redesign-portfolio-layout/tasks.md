@@ -66,15 +66,15 @@
 
 ## 4. Projects on the home page
 
-- [ ] 4.1 Research each of the six repositories (README, source tree) and pick the mockup material:
+- [x] 4.1 Research each of the six repositories (README, source tree) and pick the mockup material:
   - one excerpt of 16–24 lines per project
   - for Crow, a `curl` request and the JSON response (run locally if feasible, otherwise derived from routes and seed data and noted)
   - one or two detail excerpts per project for its page
 
   Store them in `src/data/snippets.ts` with repo, file path and language. Verify that each excerpt's lines exist in the named file of the repository (spot-check with `curl` on raw.githubusercontent.com in a scratchpad script).
-- [ ] 4.2 Add a server-only `highlight()` using shiki `codeToHtml` with dual themes (`defaultColor: false`, JS regex engine), and add the CSS that selects `--shiki-light`/`--shiki-dark` by `data-theme`. Verify that the built HTML contains highlighted spans, that no shiki code appears in client chunks (grep `out/_next/static`), and that both modes are readable in WebKit.
+- [x] 4.2 Add a server-only `highlight()` using shiki `codeToHtml` with dual themes (`defaultColor: false`, JS regex engine), and add the CSS that selects `--shiki-light`/`--shiki-dark` by `data-theme`. Verify that the built HTML contains highlighted spans, that no shiki code appears in client chunks (grep `out/_next/static`), and that both modes are readable in WebKit.
 - [ ] 4.3 Build the mockup frames `Laptop` (lid opens on reveal), `Window` and `Terminal`. They are CSS-only, with inner horizontal code scroll, an `aria-label` and the file name or command in the title bar. Verify at 1440 and 390px in both modes that nothing overflows the page, and in WebKit that the lid animation runs once and is skipped with reduced motion.
-- [ ] 4.4 Extend `PORTFOLIO_DATA.projects` (slug, mockup kind and snippet, detail snippets). Add a `summary` per project to both dictionaries, one sentence verified against the repository. Verify with `npx tsc --noEmit`.
+- [x] 4.4 Extend `PORTFOLIO_DATA.projects` (slug, mockup kind and snippet, detail snippets). Add a `summary` per project to both dictionaries, one sentence verified against the repository. Verify with `npx tsc --noEmit`.
 - [ ] 4.5 Build `ProjectSection`:
   - an accent SVG divider with number, then title, summary, language, year and team badge
   - an angled "View project" link to `/<lang>/projects/<slug>/`
