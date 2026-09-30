@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import "./globals.css";
 import { fontClasses } from "./fonts";
-import FallbackBackground from "@/components/3d/FallbackBackground";
+import { THEME_SCRIPT } from "@/lib/theme";
 import GithubIcon from "@/components/icons/GithubIcon";
 import Button from "@/components/ui/Button";
 import { BASE_PATH, localePath } from "@/lib/basePath";
@@ -62,13 +62,10 @@ export default function GlobalNotFound() {
     // The locale script sets <html lang> before paint, so the server value may differ.
     <html lang="en" className={fontClasses} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: LOCALE_SCRIPT }} />
       </head>
       <body className="isolate min-h-full bg-bg font-sans text-fg">
-        <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-          <FallbackBackground />
-        </div>
-
         <main className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col items-start justify-center px-5 py-24 sm:px-8 lg:px-10">
           <a
             href={`${BASE_PATH}/`}

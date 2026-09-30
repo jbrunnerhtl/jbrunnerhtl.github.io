@@ -8,8 +8,6 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/MotionWrapper";
 import { CountUpText } from "@/components/ui/AnimatedCounter";
 import { PORTFOLIO_DATA, repoUrl } from "@/data/portfolioData";
-import Station from "@/components/journey/Station";
-import { useJourney } from "@/components/journey/JourneyProvider";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt } from "@/i18n/config";
 
@@ -53,8 +51,6 @@ function resetPointer(e: React.PointerEvent<HTMLElement>) {
   e.currentTarget.style.removeProperty("--rx");
   e.currentTarget.style.removeProperty("--ry");
 }
-
-const CONTAINER = "mx-auto max-w-6xl px-5 sm:px-8 lg:px-10";
 
 function ProjectCard({ p, depth = 2 }: { p: Project; depth?: number }) {
   const { t } = useI18n();
@@ -168,31 +164,7 @@ function MoreRepos({ repoCount }: { repoCount: number }) {
 }
 
 export default function ProjectsSection({ repoCount }: { repoCount: number }) {
-  const journey = useJourney();
   const { projects } = PORTFOLIO_DATA;
-
-  // Space journey: every project is a station of its own, beside its own planet; the heading
-  // arrives with the first one, then the repository list is a station too.
-  if (journey) {
-    return (
-      <section id="projects" className="contents">
-        {projects.map((p, i) => (
-          <Station key={p.id} name={`projects-${i + 1}`} section="projects">
-            <div className={CONTAINER}>
-              {i === 0 && <ProjectsHeader />}
-              <ProjectCard p={p} depth={i === 0 ? 2.6 : 1.6} />
-            </div>
-          </Station>
-        ))}
-        <Station name="projects-more" section="projects">
-          <FadeIn className={CONTAINER}>
-            <MoreRepos repoCount={repoCount} />
-          </FadeIn>
-        </Station>
-      </section>
-    );
-  }
-
   return (
     <section id="projects" className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28 lg:px-10 lg:py-36">
       <ProjectsHeader />

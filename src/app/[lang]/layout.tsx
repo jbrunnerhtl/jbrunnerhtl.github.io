@@ -2,14 +2,16 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { fontClasses } from "../fonts";
-import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
-import Background from "@/components/3d/Background";
-import JourneyProvider from "@/components/journey/JourneyProvider";
+import Sidebar from "@/components/navigation/Sidebar";
+import RevealObserver from "@/components/effects/RevealObserver";
+import HashScroll from "@/components/effects/HashScroll";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LOCALES, hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
 import { OG_IMAGE_SIZE, SITE_URL, siteUrl, siteVerification } from "@/lib/site";
+import { THEME_COLOR, THEME_SCRIPT } from "@/lib/theme";
 
 // Prerender /en and /de; any other locale segment is a 404.
 export const dynamicParams = false;
@@ -55,8 +57,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  // The site only has a dark mode (a space scene).
-  themeColor: "#09090b",
+  // Dark by default; ThemeProvider updates it to the active color mode.
+  themeColor: THEME_COLOR.dark,
 };
 
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
@@ -64,13 +66,20 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!hasLocale(lang)) notFound();
 
   return (
-    <html lang={lang} className={fontClasses}>
+    // The pre-paint script sets data-theme and class="js" on <html>, so the server attributes differ.
+    <html lang={lang} className={fontClasses} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="isolate min-h-full bg-bg font-sans text-fg">
         <I18nProvider initialLang={lang}>
-          <SmoothScrollProvider>
-            <Background />
-            <JourneyProvider>{children}</JourneyProvider>
-          </SmoothScrollProvider>
+          <ThemeProvider>
+            <Sidebar />
+            <RevealObserver />
+            <HashScroll />
+            {/* Room for the fixed sidebar on wide screens. */}
+            <div className="lg:pl-24">{children}</div>
+          </ThemeProvider>
         </I18nProvider>
       </body>
     </html>

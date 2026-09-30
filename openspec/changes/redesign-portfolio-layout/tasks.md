@@ -1,14 +1,14 @@
 ## 1. Foundations: tokens, fonts, color modes, effects
 
-- [ ] 1.1 Read the bundled Next docs for `template.tsx`, `next/font` and metadata `themeColor` in `node_modules/next/dist/docs/`. Add `shiki` as a dependency. Verify that `npm ls shiki` shows it and `npm run build` still passes.
-- [ ] 1.2 Switch the text font to Montserrat via `next/font/google` in `src/app/fonts.ts`, keeping Geist Mono for code and labels. Verify with a build and a WebKit screenshot of the hero that Montserrat is rendered.
-- [ ] 1.3 Rewrite the color tokens in `globals.css`:
+- [x] 1.1 Read the bundled Next docs for `template.tsx`, `next/font` and metadata `themeColor` in `node_modules/next/dist/docs/`. Add `shiki` as a dependency. Verify that `npm ls shiki` shows it and `npm run build` still passes.
+- [x] 1.2 Switch the text font to Montserrat via `next/font/google` in `src/app/fonts.ts`, keeping Geist Mono for code and labels. Verify with a build and a WebKit screenshot of the hero that Montserrat is rendered.
+- [x] 1.3 Rewrite the color tokens in `globals.css`:
   - dark on `:root`, light on `:root[data-theme=light]`
   - `--bg`, `--fg`, `--muted`, `--faint`, `--line`, `--surface`, `--accent`, `--accent-fg`, `--accent-text`, `--sphere-base`, `--sphere-light`
   - shiki variables per mode
 
   Add a scratchpad contrast script. Verify that every text token reaches ≥4.5:1 against `--bg` and `--surface`, and `--accent-fg` against `--accent`, in both modes.
-- [ ] 1.4 Add the pre-paint theme script (`localStorage.theme`, then the system scheme; also sets `html.js`) to the `[lang]` and `(root)` layouts and to `global-not-found.tsx`, with `suppressHydrationWarning` on `<html>`. Add `ThemeProvider`, which provides `useTheme()` and `toggle()` with a view-transition cross-fade and saves the choice. Verify in WebKit:
+- [x] 1.4 Add the pre-paint theme script (`localStorage.theme`, then the system scheme; also sets `html.js`) to the `[lang]` and `(root)` layouts and to `global-not-found.tsx`, with `suppressHydrationWarning` on `<html>`. Add `ThemeProvider`, which provides `useTheme()` and `toggle()` with a view-transition cross-fade and saves the choice. Verify in WebKit:
   - light system scheme → the first screenshot is light before hydration
   - toggle → the choice persists across a reload
   - reduced motion → no cross-fade
@@ -20,21 +20,21 @@
 
 ## 2. Layout shell: remove the journey, add sidebar and menu
 
-- [ ] 2.1 Remove the journey and the space scene:
+- [x] 2.1 Remove the journey and the space scene:
   - `JourneyProvider`, `Station`, `StatsStation`, `journeyStore`, `stationGalaxies` and `motionStore`
   - `components/3d/*` (move `noise.glsl.ts` to `components/hero/`) and `Background`
   - `SmoothScrollProvider` and Lenis
   - every `useJourney()` branch and the journey CSS
 
   Sections keep their current (stacked) rendering for now. Verify with `npx tsc --noEmit`, lint, build, and `grep -rn "journey\|lenis\|motionStore" src`, which should return nothing.
-- [ ] 2.2 Build `Sidebar`:
+- [x] 2.2 Build `Sidebar`:
   - Wide screens (≥1024px): monogram, vertical section links with active-section highlight and hover/focus accent line, GitHub and email icons at the bottom, and top-right controls (language pill and theme toggle).
   - Narrow screens: top bar with monogram and menu button, plus a full-screen menu dialog with focus trap, Escape/link/breakpoint close and body scroll lock.
 
   Delete `Navbar`. Verify in WebKit at 1440, 1024, 768, 390 and 320px (no horizontal overflow, 44×44px targets on touch). Verify with the keyboard: Tab order, focus trap and Escape.
-- [ ] 2.3 Make in-page section links smooth-scroll natively and move focus to the section heading (instant with reduced motion). From other pages, links go to `/<lang>/#id`. Verify that clicking each sidebar link lands on its section, and that opening `/en/#contact` directly lands on Contact.
-- [ ] 2.4 Make `switchLang` keep the current path, mapping `/<lang>/…` to the other language, and add `app/[lang]/template.tsx` with a CSS fade (none under reduced motion). Verify by switching language on the home page (scroll position kept) and later on a project page (task 6.x re-checks this).
-- [ ] 2.5 Commit locally ("Replace the space journey with a sidebar layout shell"). Verify that `git log -1` shows the commit and the build passes.
+- [x] 2.3 Make in-page section links smooth-scroll natively and move focus to the section heading (instant with reduced motion). From other pages, links go to `/<lang>/#id`. Verify that clicking each sidebar link lands on its section, and that opening `/en/#contact` directly lands on Contact.
+- [x] 2.4 Make `switchLang` keep the current path, mapping `/<lang>/…` to the other language, and add `app/[lang]/template.tsx` with a CSS fade (none under reduced motion). Verify by switching language on the home page (scroll position kept) and later on a project page (task 6.x re-checks this).
+- [x] 2.5 Commit locally ("Replace the space journey with a sidebar layout shell"). Verify that `git log -1` shows the commit and the build passes.
 
 ## 3. Hero and displacement sphere
 

@@ -9,8 +9,7 @@ import AnimatedCounter, { CountUpText } from "@/components/ui/AnimatedCounter";
 import { RevealText } from "@/components/ui/MotionWrapper";
 import NameSwap, { type NameSegment } from "@/components/ui/NameSwap";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import { useScrollTo } from "@/components/providers/SmoothScrollProvider";
-import { useJourney } from "@/components/journey/JourneyProvider";
+import { scrollToSection } from "@/lib/scroll";
 import type { GithubStats } from "@/lib/github";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt } from "@/i18n/config";
@@ -48,13 +47,11 @@ export function useStatFacts(stats: GithubStats, countDelay: number) {
 }
 
 export default function HeroSection({ stats }: { stats: GithubStats }) {
-  const scrollTo = useScrollTo();
+  const scrollTo = scrollToSection;
   const { t } = useI18n();
   const { profile } = PORTFOLIO_DATA;
   // The stats row fades in at 0.95s; start counting just after so the count-up is actually visible.
   const facts = useStatFacts(stats, 1.05);
-  // In the space journey the stats get a station of their own (StatsStation).
-  const journey = useJourney();
 
   return (
     <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10 short:pb-4 short:pt-[6.5rem]">
@@ -115,7 +112,7 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         </Button>
       </motion.div>
 
-      {!journey && (
+      {(
         <motion.dl
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

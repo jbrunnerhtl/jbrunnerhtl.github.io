@@ -23,7 +23,11 @@ export const en = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     github: "GitHub profile",
+    email: "Send an email",
+    home: "Jan Brunner, home",
     language: "Language",
+    lightMode: "Switch to light mode",
+    darkMode: "Switch to dark mode",
   },
   hero: {
     tagline:

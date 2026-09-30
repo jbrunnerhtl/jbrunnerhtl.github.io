@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import { seededRandom } from "@/components/3d/random";
+import { seededRandom } from "@/lib/random";
 import { OG_IMAGE_SIZE } from "@/lib/site";
 
 // Link preview for /en/ and /de/ (Open Graph and the large Twitter/X card), rendered once at build

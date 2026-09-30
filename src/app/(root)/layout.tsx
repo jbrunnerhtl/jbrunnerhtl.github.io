@@ -3,6 +3,7 @@ import "../globals.css";
 import { fontClasses } from "../fonts";
 import { LOCALES } from "@/i18n/config";
 import { SITE_URL, siteUrl, siteVerification } from "@/lib/site";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 // Separate root layout for "/" only: it just forwards to /en/ or /de/ (see page.tsx).
 // For search engines it is the x-default of the two language pages, and the home page on which
@@ -20,7 +21,10 @@ export const metadata: Metadata = {
 
 export default function RootRedirectLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={fontClasses}>
+    <html lang="en" className={fontClasses} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-full bg-bg font-sans text-fg">{children}</body>
     </html>
   );

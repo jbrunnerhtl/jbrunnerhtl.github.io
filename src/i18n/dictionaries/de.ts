@@ -24,7 +24,11 @@ export const de: Dictionary = {
     openMenu: "Menü öffnen",
     closeMenu: "Menü schließen",
     github: "GitHub-Profil",
+    email: "E-Mail schreiben",
+    home: "Jan Brunner, Startseite",
     language: "Sprache",
+    lightMode: "Zum hellen Modus wechseln",
+    darkMode: "Zum dunklen Modus wechseln",
   },
   hero: {
     tagline:

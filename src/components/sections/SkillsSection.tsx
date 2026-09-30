@@ -5,12 +5,11 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import { FadeIn } from "@/components/ui/MotionWrapper";
 import SkillMarquee from "@/components/ui/SkillMarquee";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import { useJourney } from "@/components/journey/JourneyProvider";
 import { useI18n } from "@/i18n/I18nProvider";
 
 export default function SkillsSection() {
   const { t } = useI18n();
-  const journey = useJourney();
+  const journey: boolean = false;
   return (
     <section id="skills" className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28 lg:px-10 lg:py-36">
       <SectionHeader
