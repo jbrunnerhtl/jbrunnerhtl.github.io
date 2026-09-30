@@ -1,148 +1,101 @@
 "use client";
 
-import React from "react";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-import GithubIcon from "@/components/icons/GithubIcon";
-import Button from "@/components/ui/Button";
-import AnimatedCounter, { CountUpText } from "@/components/ui/AnimatedCounter";
-import { RevealText } from "@/components/ui/MotionWrapper";
-import NameSwap, { type NameSegment } from "@/components/ui/NameSwap";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import DecoderText from "@/components/effects/DecoderText";
+import HeroBackdrop from "@/components/hero/HeroBackdrop";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
 import { scrollToSection } from "@/lib/scroll";
-import type { GithubStats } from "@/lib/github";
 import { useI18n } from "@/i18n/I18nProvider";
-import { fmt } from "@/i18n/config";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+const CYCLE_MS = 3000;
 
-// The hero name alternates between the real name and the GitHub handle.
-const NAMES: NameSegment[][] = [
-  [
-    { text: "Jan ", className: "text-fg" },
-    { text: "Brunner.", className: "text-chrome" },
-  ],
-  [
-    { text: "J", className: "text-fg" },
-    { text: "Brunnerhtl", className: "text-chrome" },
-  ],
-];
-
-/** The GitHub stats, shared by the hero (stacked page) and the stats station (space journey). */
-export function useStatFacts(stats: GithubStats, countDelay: number) {
-  const { t } = useI18n();
-  const { profile } = PORTFOLIO_DATA;
-  const years = new Date().getFullYear() - profile.codingSince;
-  const COUNT_DELAY = countDelay;
-  return [
-    { value: <AnimatedCounter value={stats.publicRepos} delay={COUNT_DELAY} />, label: t.hero.statRepos },
-    { value: <>Top <AnimatedCounter value={15} delay={COUNT_DELAY + 0.1} /></>, label: t.hero.statContest },
-    {
-      // "{n}+ yrs" / "{n}+ Jahre": animate the number, keep the translated unit around it.
-      value: <CountUpText template={t.hero.statYears} n={years} delay={COUNT_DELAY + 0.2} />,
-      label: fmt(t.hero.statSince, { year: profile.codingSince }),
-    },
-    { value: stats.topLanguages.join(" · "), label: t.hero.statLanguages, small: true },
-  ];
+/**
+ * Index into the role list, advancing every CYCLE_MS while the hero is on screen and the tab is
+ * visible; never with reduced motion.
+ */
+function useRoleCycle(count: number, target: React.RefObject<HTMLElement | null>) {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const el = target.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let inView = true;
+    const io = new IntersectionObserver(([e]) => (inView = e.isIntersecting));
+    io.observe(el);
+    const id = setInterval(() => {
+      if (inView && document.visibilityState === "visible") setIndex((i) => (i + 1) % count);
+    }, CYCLE_MS);
+    return () => {
+      clearInterval(id);
+      io.disconnect();
+    };
+  }, [count, target]);
+  return index;
 }
 
-export default function HeroSection({ stats }: { stats: GithubStats }) {
-  const scrollTo = scrollToSection;
+export default function HeroSection() {
   const { t } = useI18n();
-  const { profile } = PORTFOLIO_DATA;
-  // The stats row fades in at 0.95s; start counting just after so the count-up is actually visible.
-  const facts = useStatFacts(stats, 1.05);
+  const section = useRef<HTMLElement>(null);
+  const roles = t.hero.roles;
+  const index = useRoleCycle(roles.length, section);
 
   return (
-    <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10 short:pb-4 short:pt-[6.5rem]">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.1 }}
-        className="mb-6 flex items-start gap-3 text-sm text-muted sm:mb-8 sm:items-center short:mb-3"
-      >
-        <span className="relative mt-1.5 flex h-2 w-2 shrink-0 sm:mt-0">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-        </span>
-        {t.profile.heroLine}
-      </motion.div>
+    <section id="hero" data-nav="" ref={section} className="relative flex min-h-[100svh] items-center overflow-hidden">
+      <HeroBackdrop />
 
-      {/* The heading search engines and screen readers get: the name, once. The animated name below
-          is purely visual (aria-hidden), so its letters and size placeholders stay out of the <h1>. */}
-      <h1 className="sr-only">{profile.name}</h1>
-      <div
-        aria-hidden
-        data-depth="2"
-        className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] short:text-[clamp(2.25rem,min(11vw,17svh),7.5rem)]"
-      >
-        <NameSwap
-          names={NAMES}
-          intro={
-            <>
-              <RevealText text="Jan" className="text-fg" delay={0.15} />{" "}
-              <RevealText text="Brunner." className="text-chrome" delay={0.25} />
-            </>
-          }
-        />
+      <div className="relative w-full px-6 pb-24 pt-28 sm:px-10 lg:pl-[clamp(4rem,14vw,16rem)] lg:pr-16 short:py-20">
+        {/* The page's heading: the name, once, as text. */}
+        <h1
+          className="hero-in text-base font-medium uppercase tracking-[0.3em] text-muted sm:text-xl lg:text-2xl"
+          style={{ "--delay": "0.1s" } as React.CSSProperties}
+        >
+          {PORTFOLIO_DATA.profile.name}
+        </h1>
+
+        <h2 className="mt-5 text-[clamp(2.75rem,11vw,7.5rem)] font-medium leading-[1.02] tracking-[-0.035em] sm:mt-8 short:mt-3 short:text-[clamp(2.25rem,16svh,4.5rem)]">
+          {/* Stable text for screen readers and search engines; the cycling role below is visual. */}
+          <span className="sr-only">
+            {t.hero.role} + {roles[0]}
+          </span>
+          <span aria-hidden className="block">
+            <span className="flex items-center gap-5 sm:gap-8">
+              <span className="hero-in text-fg" style={{ "--delay": "0.25s" } as React.CSSProperties}>
+                {t.hero.role}
+              </span>
+              <span
+                className="hero-line mt-[0.1em] h-px max-w-[22rem] flex-1 bg-faint/60"
+                style={{ "--delay": "0.6s" } as React.CSSProperties}
+              />
+            </span>
+            <span className="hero-in flex items-baseline gap-[0.25em] text-[0.82em] sm:text-[1em]" style={{ "--delay": "0.4s" } as React.CSSProperties}>
+              <span className="text-faint">+</span>
+              {/* Every role in one grid cell (invisible) reserves the widest, so nothing shifts. */}
+              <span className="grid">
+                {roles.map((r) => (
+                  <span key={r} className="invisible col-start-1 row-start-1 whitespace-nowrap">
+                    {r}
+                  </span>
+                ))}
+                <DecoderText text={roles[index]} playOnView={false} className="col-start-1 row-start-1 whitespace-nowrap text-muted" />
+              </span>
+            </span>
+          </span>
+        </h2>
       </div>
 
-      <motion.p
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.55, ease: EASE }}
-        className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:mt-8 sm:text-xl short:mt-4 short:max-w-2xl short:text-sm"
-      >
-        {t.hero.tagline}
-      </motion.p>
-
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.7, ease: EASE }}
-        className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 short:mt-4"
-      >
-        <Button onClick={() => scrollTo("projects")} icon={<ArrowRight className="h-4 w-4" />}>
-          {t.hero.viewProjects}
-        </Button>
-        <Button variant="secondary" href={profile.githubUrl}>
-          <span className="flex items-center gap-2">
-            <GithubIcon className="h-4 w-4" /> @{profile.handle}
-          </span>
-        </Button>
-      </motion.div>
-
-      {(
-        <motion.dl
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.95 }}
-          className="mt-14 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-8 sm:mt-20 lg:grid-cols-4"
-        >
-          {facts.map((f) => (
-            <div key={f.label} className="flex flex-col-reverse justify-end">
-              <dt className="eyebrow mt-2">{f.label}</dt>
-              <dd className={`font-semibold tracking-tight text-fg ${f.small ? "text-base sm:text-xl" : "text-2xl sm:text-3xl"}`}>
-                {f.value}
-              </dd>
-            </div>
-          ))}
-        </motion.dl>
-      )}
-
-      <motion.button
+      <button
         type="button"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.3 }}
-        onClick={() => scrollTo("about")}
-        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-faint transition-colors hover:text-fg sm:flex [@media(max-height:760px)]:hidden"
+        onClick={() => scrollToSection("projects")}
         aria-label={t.hero.scrollHint}
+        className="hero-in absolute bottom-8 left-1/2 grid h-14 w-11 -translate-x-1/2 place-items-center text-muted transition-colors hover:text-fg short:hidden"
+        style={{ "--delay": "1.1s" } as React.CSSProperties}
       >
-        <motion.span animate={{ y: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}>
-          <ArrowDown className="h-4 w-4" />
-        </motion.span>
-      </motion.button>
+        {/* Mouse outline with a rolling wheel on wide screens, a chevron on touch screens. */}
+        <span className="relative hidden h-10 w-6 rounded-full border-2 border-current sm:block">
+          <span className="scroll-wheel absolute left-1/2 top-2 h-2 w-0.5 -translate-x-1/2 rounded-full bg-current" />
+        </span>
+        <ChevronDown className="h-7 w-7 sm:hidden" strokeWidth={1.5} />
+      </button>
     </section>
   );
 }

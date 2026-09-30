@@ -31,6 +31,8 @@ export const de: Dictionary = {
     darkMode: "Zum dunklen Modus wechseln",
   },
   hero: {
+    role: "Entwickler",
+    roles: ["Schüler", "Backend-Dev", "App-Bauer", "Tüftler"],
     tagline:
       "Ich baue Software über den ganzen Stack: Java-Desktop-Apps, TypeScript-APIs, C++-Backends und Services mit Docker und Kubernetes.",
     viewProjects: "Projekte ansehen",
@@ -42,7 +44,7 @@ export const de: Dictionary = {
     statsTitle: "Meine Arbeit",
     statsTitleHighlight: "in Zahlen.",
     statLanguages: "Meistgenutzt auf GitHub",
-    scrollHint: "Zu „Über mich“ scrollen",
+    scrollHint: "Zu den Projekten scrollen",
   },
   about: {
     label: "Über mich",

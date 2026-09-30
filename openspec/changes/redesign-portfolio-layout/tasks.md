@@ -12,7 +12,7 @@
   - light system scheme → the first screenshot is light before hydration
   - toggle → the choice persists across a reload
   - reduced motion → no cross-fade
-- [ ] 1.5 Add `useReveal()` (one IntersectionObserver, `data-reveal` → `data-revealed`, stagger via `--i`, CSS hidden only under `html.js`, shown under reduced motion) and `<DecoderText>` (sr-only final text plus `aria-hidden` scrambling span, code-ish glyph set). Verify on a test section in WebKit:
+- [x] 1.5 Add `useReveal()` (one IntersectionObserver, `data-reveal` → `data-revealed`, stagger via `--i`, CSS hidden only under `html.js`, shown under reduced motion) and `<DecoderText>` (sr-only final text plus `aria-hidden` scrambling span, code-ish glyph set). Verify on a test section in WebKit:
   - with JavaScript, content reveals on scroll
   - with JavaScript disabled, everything is visible
   - with reduced motion, no animation
@@ -38,7 +38,7 @@
 
 ## 3. Hero and displacement sphere
 
-- [ ] 3.1 Rebuild `HeroSection`:
+- [x] 3.1 Rebuild `HeroSection`:
   - `<h1>` "Jan Brunner" as a tracked uppercase eyebrow
   - an `<h2>` role title (big role word plus line, and "+ role" cycling every ~3s with `DecoderText`), with a stable accessible text and a width reserved by a sizer
   - a CSS entrance on first paint
@@ -49,7 +49,7 @@
   - the `<h1>` text in `out/en/index.html` is exactly "Jan Brunner"
   - no layout shift while cycling
   - the accessibility text stays stable
-- [ ] 3.2 Build `DisplacementSphere`:
+- [x] 3.2 Build `DisplacementSphere`:
   - r3f canvas, a `SphereGeometry` with `MeshPhongMaterial` (`flatShading`, noise displacement via `onBeforeCompile`), accent and white directional lights
   - a spring rotation towards the pointer (scroll-driven on touch devices)
   - colors from `--sphere-*`, updated live on theme change
@@ -62,7 +62,7 @@
   - no frames are rendered after scrolling past the hero (count them with a rAF probe)
   - the fallback shows with WebGL disabled
   - the initial JS of `/en/` excludes three.js (check the build output chunks)
-- [ ] 3.3 Commit locally ("Add the hero with cycling role and displacement sphere"). Verify that the build passes.
+- [x] 3.3 Commit locally ("Add the hero with cycling role and displacement sphere"). Verify that the build passes.
 
 ## 4. Projects on the home page
 

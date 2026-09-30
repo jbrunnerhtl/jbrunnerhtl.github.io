@@ -30,6 +30,9 @@ export const en = {
     darkMode: "Switch to dark mode",
   },
   hero: {
+    // "Developer" with a line, then "+ <role>", cycling through the roles.
+    role: "Developer",
+    roles: ["Student", "Backend Dev", "App Builder", "Tinkerer"],
     tagline:
       "I build things across the stack: Java desktop apps, TypeScript APIs, C++ backends and services with Docker and Kubernetes.",
     viewProjects: "View projects",
@@ -41,7 +44,7 @@ export const en = {
     statsTitle: "My work",
     statsTitleHighlight: "in numbers.",
     statLanguages: "Most used on GitHub",
-    scrollHint: "Scroll to about",
+    scrollHint: "Scroll to projects",
   },
   about: {
     label: "About",

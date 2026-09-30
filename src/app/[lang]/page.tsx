@@ -15,7 +15,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   return (
     <main className="relative min-h-screen">
       <StructuredData lang={lang as Locale} />
-      <HeroSection stats={stats} />
+      <HeroSection />
       <ProjectsSection repoCount={stats.publicRepos} />
       <AboutSection />
       <SkillsSection />
