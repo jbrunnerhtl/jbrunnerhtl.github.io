@@ -1,10 +1,11 @@
+import type React from "react";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import "./globals.css";
 import { fontClasses } from "./fonts";
-import FallbackBackground from "@/components/3d/FallbackBackground";
+import { THEME_SCRIPT } from "@/lib/theme";
 import GithubIcon from "@/components/icons/GithubIcon";
-import Button from "@/components/ui/Button";
+import Monogram from "@/components/navigation/Monogram";
 import { BASE_PATH, localePath } from "@/lib/basePath";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { en } from "@/i18n/dictionaries/en";
@@ -22,36 +23,27 @@ export const metadata: Metadata = { title: `404 — ${PORTFOLIO_DATA.profile.nam
 
 function NotFoundContent({ lang }: { lang: Locale }) {
   const t = DICTS[lang];
+  const d = (s: number) => ({ "--delay": `${s}s` }) as React.CSSProperties;
   return (
     <div data-locale={lang}>
-      <p className="eyebrow">
-        <span className="text-accent">404</span>
-        <span className="mx-2">/</span>
-        {t.notFound.title}
-      </p>
-      {/* Reuses the hero's CSS reveal, so it animates without any client JS. */}
-      <h1 className="mt-6 text-[clamp(5rem,22vw,13rem)] font-semibold leading-[0.85] tracking-[-0.06em]">
-        <span className="-my-[0.12em] inline-block overflow-hidden py-[0.12em] pr-[0.06em] -mr-[0.06em]">
-          <span className="reveal-word text-chrome inline-block" style={{ animationDelay: "0.1s" }}>
-            404
-          </span>
-        </span>
-      </h1>
-      <h2 className="mt-8 text-[clamp(1.5rem,4.5vw,2.5rem)] font-semibold leading-tight tracking-[-0.03em] text-fg">
+      {/* Static (no reveal script on this page); the CSS entrance runs on first paint. */}
+      <div className="hero-in flex items-center gap-4" style={d(0.05)}>
+        <span aria-hidden className="section-divider" />
+        <span className="font-mono text-sm tracking-wider text-accent-text">404</span>
+      </div>
+      <h1 className="hero-in mt-8 text-[clamp(2.75rem,8vw,6rem)] font-medium leading-[1.02] tracking-[-0.035em] text-fg" style={d(0.15)}>
         {t.notFound.heading}
-      </h2>
-      <p className="mt-4 max-w-md text-base leading-relaxed text-muted sm:text-lg">{t.notFound.text}</p>
-      <div className="mt-10 flex flex-wrap gap-3">
-        <Button href={localePath(lang)}>
-          <span className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" /> {t.notFound.back}
-          </span>
-        </Button>
-        <Button variant="secondary" href={PORTFOLIO_DATA.profile.githubUrl}>
-          <span className="flex items-center gap-2">
-            <GithubIcon className="h-4 w-4" /> GitHub
-          </span>
-        </Button>
+      </h1>
+      <p className="hero-in mt-6 max-w-lg text-lg leading-relaxed text-muted" style={d(0.3)}>
+        {t.notFound.text}
+      </p>
+      <div className="hero-in mt-12 flex flex-wrap items-center gap-x-8 gap-y-6" style={d(0.45)}>
+        <a href={localePath(lang)} className="btn-accent">
+          <ArrowLeft aria-hidden className="h-5 w-5" /> {t.notFound.back}
+        </a>
+        <a href={PORTFOLIO_DATA.profile.githubUrl} className="inline-flex items-center gap-2 text-lg font-medium text-fg transition-colors hover:text-accent-text">
+          <GithubIcon className="h-5 w-5" /> GitHub
+        </a>
       </div>
     </div>
   );
@@ -62,20 +54,17 @@ export default function GlobalNotFound() {
     // The locale script sets <html lang> before paint, so the server value may differ.
     <html lang="en" className={fontClasses} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: LOCALE_SCRIPT }} />
       </head>
       <body className="isolate min-h-full bg-bg font-sans text-fg">
-        <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-          <FallbackBackground />
-        </div>
-
-        <main className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col items-start justify-center px-5 py-24 sm:px-8 lg:px-10">
+        <main className="relative mx-auto flex min-h-[100svh] max-w-[88rem] flex-col items-start justify-center px-6 py-24 sm:px-10 lg:px-16">
           <a
             href={`${BASE_PATH}/`}
-            className="absolute left-5 top-[max(1.25rem,env(safe-area-inset-top))] flex items-center gap-2.5 text-sm font-medium text-fg sm:left-8 lg:left-10"
+            aria-label={PORTFOLIO_DATA.profile.name}
+            className="absolute left-6 top-[max(1.5rem,env(safe-area-inset-top))] grid min-h-11 min-w-11 place-items-center text-fg sm:left-10 lg:left-16"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-fg text-[11px] font-bold text-bg">JB</span>
-            {PORTFOLIO_DATA.profile.name}
+            <Monogram />
           </a>
           {LOCALES.map((l) => (
             <NotFoundContent key={l} lang={l} />
