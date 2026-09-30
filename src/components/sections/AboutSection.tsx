@@ -64,9 +64,9 @@ export default function AboutSection({ stats }: { stats: GithubStats }) {
         <div className="lg:col-span-5 lg:col-start-8">
           <SectionDivider label={t.about.label} />
           <div data-reveal style={delay(1)} className="relative mt-10 max-w-md pr-14 sm:pr-20">
-            {/* Accent block behind the picture and the handle as vertical lettering (decorative). */}
-            <span aria-hidden className="absolute -bottom-6 right-6 top-10 w-1/3 bg-accent sm:right-10" />
-            <span aria-hidden className="outline-letters about-handle absolute -right-1 top-0 text-[clamp(1.75rem,3vw,2.75rem)]">
+            {/* Accent block behind the picture, and the handle written vertically beside both. */}
+            <span aria-hidden className="absolute -bottom-6 right-10 top-10 w-1/3 bg-accent sm:right-14" />
+            <span aria-hidden className="about-handle absolute right-0 top-0 text-[clamp(1.75rem,3vw,2.75rem)]">
               {profile.handle.toUpperCase()}
             </span>
             {/* eslint-disable-next-line @next/next/no-img-element -- static export, no image optimizer */}

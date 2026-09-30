@@ -524,10 +524,15 @@ html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
 }
 
 /* ---------- About ---------- */
-/* The handle, written top to bottom beside the picture (decorative outline lettering). */
+/* The handle, written top to bottom beside the picture: solid and readable in both modes. */
 .about-handle {
   writing-mode: vertical-rl;
-  -webkit-text-stroke-color: color-mix(in oklab, var(--fg) 35%, transparent);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+  white-space: nowrap;
+  user-select: none;
 }
 
 /* ---------- 404 ---------- */
