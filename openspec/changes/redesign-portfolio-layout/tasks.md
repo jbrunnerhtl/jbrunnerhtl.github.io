@@ -94,20 +94,20 @@
 
 ## 6. Project detail pages
 
-- [ ] 6.1 Write the project page copy for all six projects (`intro`, `features`, `built`, snippet captions) in English from each README and source, then in German, plus the shared labels. Verify with `npx tsc --noEmit` (the German dictionary has the same shape), and check each feature against the repository (checklist in the scratchpad).
-- [ ] 6.2 Add `app/[lang]/projects/[slug]/page.tsx` (`generateStaticParams`, `dynamicParams = false`) with:
+- [x] 6.1 Write the project page copy for all six projects (`intro`, `features`, `built`, snippet captions) in English from each README and source, then in German, plus the shared labels. Verify with `npx tsc --noEmit` (the German dictionary has the same shape), and check each feature against the repository (checklist in the scratchpad).
+- [x] 6.2 Add `app/[lang]/projects/[slug]/page.tsx` (`generateStaticParams`, `dynamicParams = false`) with:
   - a header (h1, intro, GitHub and Live links, facts list with language, year, team or solo, and stack)
   - the full-width mockup, then the Features and "How it's built" sections with detail snippets
   - the next-project link and a back link
 
   Verify that `out/{en,de}/projects/<slug>/index.html` exist for all 12, that an unknown slug gets the 404 page, and that WebKit screenshots at 1440 and 390 in both modes look right.
-- [ ] 6.3 Add `generateMetadata` (title "<Project> — Jan Brunner", description, canonical, alternates, OG and Twitter with the language image) and a `SoftwareSourceCode` JSON-LD whose author is the person `@id`. Verify with a scratchpad script over the 12 built pages: canonical, alternates, a single `<h1>` equal to the title, and JSON-LD that parses.
-- [ ] 6.4 Verify navigation in WebKit:
+- [x] 6.3 Add `generateMetadata` (title "<Project> — Jan Brunner", description, canonical, alternates, OG and Twitter with the language image) and a `SoftwareSourceCode` JSON-LD whose author is the person `@id`. Verify with a scratchpad script over the 12 built pages: canonical, alternates, a single `<h1>` equal to the title, and JSON-LD that parses.
+- [x] 6.4 Verify navigation in WebKit:
   - home → project → Back restores the scroll position
   - next-project from RPN goes to Driving Planner, at the top
   - a language switch on a project page keeps the project
   - sidebar links from a project page go to the home section
-- [ ] 6.5 Commit locally ("Add project detail pages"). Verify that the build passes.
+- [x] 6.5 Commit locally ("Add project detail pages"). Verify that the build passes.
 
 ## 7. SEO touch points, 404 and preview image
 
