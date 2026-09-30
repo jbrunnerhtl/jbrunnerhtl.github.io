@@ -33,7 +33,7 @@ function Name({ segments, mode }: { segments: NameSegment[]; mode?: "in" | "out"
   const delay = () => `${(mode === "in" ? IN_DELAY_S : 0) + i++ * STAGGER_S}s`;
   return toWords(segments).map((word, w) => (
     <React.Fragment key={w}>
-      {w > 0 && <span className="glyph" data-text=" " />}
+      {w > 0 && " "}
       <span data-word className="inline-block whitespace-nowrap">
         {word.flatMap((run, r) =>
           [...run.letters].map((letter, l) => (
@@ -41,10 +41,11 @@ function Name({ segments, mode }: { segments: NameSegment[]; mode?: "in" | "out"
             <span key={`${r}-${l}`} className="-my-[0.12em] inline-block overflow-hidden py-[0.12em] align-bottom">
               <span
                 data-letter
-                data-text={letter}
-                className={`glyph inline-block ${run.className} ${mode ? `name-${mode}` : ""}`}
+                className={`inline-block ${run.className} ${mode ? `name-${mode}` : ""}`}
                 style={mode ? { animationDelay: delay() } : undefined}
-              />
+              >
+                {letter}
+              </span>
             </span>
           )),
         )}
@@ -71,18 +72,15 @@ function alignGradients(root: HTMLElement) {
 /**
  * Alternates a heading between names: the letters of one name leave upwards while the next rises in.
  * The first name is shown by `intro` (server-rendered, CSS entrance). Every name reserves its space
- * invisibly so the heading never changes height. All letters are drawn from data-text (see .glyph),
- * so `label` is the heading's only text, for screen readers and search engines alike.
+ * invisibly so the heading never changes height. Purely visual: the page's real heading is separate.
  * Stays on the first name when reduced motion is preferred, and pauses off-screen or in a hidden tab.
  */
 export default function NameSwap({
   names,
   intro,
-  label,
 }: {
   names: NameSegment[][];
   intro: React.ReactNode;
-  label: string;
 }) {
   const boxRef = useRef<HTMLSpanElement>(null);
   // null while the intro is showing; `step` remounts the letters so their animations restart.
@@ -127,7 +125,6 @@ export default function NameSwap({
 
   return (
     <>
-      <span className="sr-only">{label}</span>
       <span ref={boxRef} aria-hidden className="grid">
         {names.map((name, i) => (
           <span key={`size-${i}`} className="invisible [grid-area:1/1]">

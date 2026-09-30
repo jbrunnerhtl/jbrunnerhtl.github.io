@@ -71,19 +71,24 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         {t.profile.heroLine}
       </motion.div>
 
-      <h1 data-depth="2" className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] short:text-[clamp(2.25rem,min(11vw,17svh),7.5rem)]">
+      {/* The heading search engines and screen readers get: the name, once. The animated name below
+          is purely visual (aria-hidden), so its letters and size placeholders stay out of the <h1>. */}
+      <h1 className="sr-only">{profile.name}</h1>
+      <div
+        aria-hidden
+        data-depth="2"
+        className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] short:text-[clamp(2.25rem,min(11vw,17svh),7.5rem)]"
+      >
         <NameSwap
           names={NAMES}
-          label={profile.name}
           intro={
             <>
-              <RevealText text="Jan" className="text-fg" delay={0.15} />
-              <span className="glyph" data-text=" " />
+              <RevealText text="Jan" className="text-fg" delay={0.15} />{" "}
               <RevealText text="Brunner." className="text-chrome" delay={0.25} />
             </>
           }
         />
-      </h1>
+      </div>
 
       <motion.p
         initial={{ opacity: 0, y: 16 }}
