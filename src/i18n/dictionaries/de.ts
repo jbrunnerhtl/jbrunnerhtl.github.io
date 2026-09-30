@@ -8,6 +8,7 @@ export const de: Dictionary = {
     description:
       "Portfolio von Jan Brunner, Schüler der Softwareentwicklung an der HTL Leonding (Oberösterreich). Projekte in Java, TypeScript, C#, C++ und Rust von github.com/jbrunnerhtl.",
     ogDescription: "Projekte und Skills von Jan Brunner, HTL Leonding.",
+    keywords: ["Jan Brunner", "jbrunnerhtl", "HTL Leonding", "Softwareentwicklung", "Portfolio", "Oberösterreich", "Java", "TypeScript", "C#", "C++", "Rust"],
   },
   profile: {
     location: "Oberösterreich",
@@ -24,13 +25,6 @@ export const de: Dictionary = {
     github: "GitHub-Profil",
     language: "Sprache",
   },
-  theme: {
-    dark: "Dunkel",
-    light: "Hell",
-    system: "System",
-    ariaLabel: "Farbmodus: {current}. Wechseln zu {next}",
-    title: "Modus: {current}",
-  },
   hero: {
     tagline:
       "Ich baue Software über den ganzen Stack: Java-Desktop-Apps, TypeScript-APIs, C++-Backends und Services mit Docker und Kubernetes.",
@@ -39,6 +33,9 @@ export const de: Dictionary = {
     statContest: "Cloudflight Contest 2024",
     statYears: "{n}+ Jahre",
     statSince: "Programmiert seit {year}",
+    statsLabel: "GitHub",
+    statsTitle: "Meine Arbeit",
+    statsTitleHighlight: "in Zahlen.",
     statLanguages: "Meistgenutzt auf GitHub",
     scrollHint: "Zu „Über mich“ scrollen",
   },
@@ -92,10 +89,10 @@ export const de: Dictionary = {
         description:
           "Eine JavaFX-Desktop-App zum Lernen mit digitalen Karteikarten, sortiert in Stapel. Sie wählt Karten mit einem gewichteten Auswahl-Algorithmus, zählt Lern-Streaks und Statistiken, importiert und exportiert Stapel und speichert sie als JSON mit Jackson. Gebaut nach dem MVP-Pattern, auf Deutsch und Englisch, mit hellem und dunklem Theme und Tests mit JUnit und Mockito.",
       },
-      "fruit-auth": {
-        title: "FruitAuth",
+      "vector-viewer": {
+        title: "3D-Vektor-Viewer",
         description:
-          "Eine Full-Stack-App in TypeScript mit einer REST-API auf Express 5 und einem Frontend in reinem TypeScript. Sie hat JWT-Authentifizierung, rollenbasierte Autorisierung als Middleware, Passwort-Hashing mit bcrypt und SQLite über better-sqlite3.",
+          "Ein interaktiver 3D-Vektor-Viewer in C# mit Raylib-cs. Vektoren hinzufügen, Start- und Endpunkt per Slider setzen und live in einem mitwachsenden, beschrifteten Koordinatengitter mit kreisender Kamera verfolgen.",
       },
       crow: {
         title: "Crow Demo Backend",

@@ -5,8 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import GithubIcon from "@/components/icons/GithubIcon";
 import { useScrollTo } from "@/components/providers/SmoothScrollProvider";
+import { useJourney } from "@/components/journey/JourneyProvider";
+import { journeyStore } from "@/lib/journeyStore";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import LanguageSwitch from "@/components/ui/LanguageSwitch";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -20,13 +21,23 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const journey = useJourney();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // Mark whichever section crosses the middle band of the viewport as active.
+    // Space journey: the section whose station is being held is active (none at the hero).
+    if (journey) {
+      const unsubscribe = journeyStore.subscribe(() => setActive(journeyStore.activeSection));
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        unsubscribe();
+      };
+    }
+
+    // Stacked page: mark whichever section crosses the middle band of the viewport as active.
     const observer = new IntersectionObserver(
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(e.target.id === "hero" ? null : e.target.id);
@@ -42,7 +53,7 @@ export default function Navbar() {
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
     };
-  }, []);
+  }, [journey]);
 
   // Close the mobile menu on Escape or when the layout grows past the breakpoint.
   useEffect(() => {
@@ -73,6 +84,7 @@ export default function Navbar() {
       className="fixed inset-x-0 top-0 z-50 flex flex-col items-center px-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-4 sm:pt-4"
     >
       <div
+        data-navbar-bar
         className={`flex w-full max-w-6xl items-center justify-between rounded-full border py-1.5 pl-2 pr-1.5 transition-[background-color,border-color] duration-500 sm:px-3 sm:py-2 ${
           solid ? "border-line bg-bg/75 backdrop-blur-md" : "border-transparent bg-transparent"
         }`}
@@ -80,7 +92,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => go("hero")}
-          className="flex items-center gap-2.5 rounded-full px-1 py-1 text-sm font-medium text-fg sm:px-2"
+          className="flex items-center gap-2.5 rounded-full px-1 py-1 text-sm font-medium text-fg sm:px-2 coarse:min-h-11 coarse:min-w-11"
         >
           <span className="grid h-8 w-8 place-items-center rounded-full bg-fg text-[11px] font-bold text-bg sm:h-7 sm:w-7">
             JB
@@ -94,7 +106,7 @@ export default function Navbar() {
               type="button"
               key={id}
               onClick={() => go(id)}
-              className={`group relative rounded-full px-3 py-1.5 text-[13px] transition-colors duration-300 lg:px-4 ${
+              className={`group relative rounded-full px-3 py-1.5 text-[13px] transition-colors duration-300 lg:px-4 coarse:py-3 ${
                 active === id ? "text-fg" : "text-muted hover:text-fg"
               }`}
             >
@@ -122,17 +134,16 @@ export default function Navbar() {
             href={PORTFOLIO_DATA.profile.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden h-10 w-10 place-items-center rounded-full text-muted transition-colors hover:text-fg sm:grid md:h-8 md:w-8"
+            className="hidden h-10 w-10 place-items-center rounded-full text-muted transition-colors hover:text-fg sm:grid md:h-8 md:w-8 coarse:h-11 coarse:w-11"
             aria-label={t.nav.github}
           >
             <GithubIcon className="h-4 w-4" />
           </a>
           <LanguageSwitch />
-          <ThemeToggle />
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
-            className="grid h-10 w-10 place-items-center rounded-full text-fg transition-colors hover:bg-tint/[0.06] md:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full text-fg transition-colors hover:bg-tint/[0.06] md:hidden coarse:h-11 coarse:w-11"
             aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"

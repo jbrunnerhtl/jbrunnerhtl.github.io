@@ -10,6 +10,7 @@ import { RevealText } from "@/components/ui/MotionWrapper";
 import NameSwap, { type NameSegment } from "@/components/ui/NameSwap";
 import { PORTFOLIO_DATA } from "@/data/portfolioData";
 import { useScrollTo } from "@/components/providers/SmoothScrollProvider";
+import { useJourney } from "@/components/journey/JourneyProvider";
 import type { GithubStats } from "@/lib/github";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt } from "@/i18n/config";
@@ -28,15 +29,13 @@ const NAMES: NameSegment[][] = [
   ],
 ];
 
-export default function HeroSection({ stats }: { stats: GithubStats }) {
-  const scrollTo = useScrollTo();
+/** The GitHub stats, shared by the hero (stacked page) and the stats station (space journey). */
+export function useStatFacts(stats: GithubStats, countDelay: number) {
   const { t } = useI18n();
   const { profile } = PORTFOLIO_DATA;
   const years = new Date().getFullYear() - profile.codingSince;
-
-  // The stats row fades in at 0.95s; start counting just after so the count-up is actually visible.
-  const COUNT_DELAY = 1.05;
-  const facts = [
+  const COUNT_DELAY = countDelay;
+  return [
     { value: <AnimatedCounter value={stats.publicRepos} delay={COUNT_DELAY} />, label: t.hero.statRepos },
     { value: <>Top <AnimatedCounter value={15} delay={COUNT_DELAY + 0.1} /></>, label: t.hero.statContest },
     {
@@ -46,14 +45,24 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
     },
     { value: stats.topLanguages.join(" · "), label: t.hero.statLanguages, small: true },
   ];
+}
+
+export default function HeroSection({ stats }: { stats: GithubStats }) {
+  const scrollTo = useScrollTo();
+  const { t } = useI18n();
+  const { profile } = PORTFOLIO_DATA;
+  // The stats row fades in at 0.95s; start counting just after so the count-up is actually visible.
+  const facts = useStatFacts(stats, 1.05);
+  // In the space journey the stats get a station of their own (StatsStation).
+  const journey = useJourney();
 
   return (
-    <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10">
+    <section id="hero" className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-5 pb-16 pt-28 sm:px-8 sm:pt-32 lg:px-10 short:pb-4 short:pt-[6.5rem]">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.1 }}
-        className="mb-6 flex items-start gap-3 text-sm text-muted sm:mb-8 sm:items-center"
+        className="mb-6 flex items-start gap-3 text-sm text-muted sm:mb-8 sm:items-center short:mb-3"
       >
         <span className="relative mt-1.5 flex h-2 w-2 shrink-0 sm:mt-0">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
@@ -62,10 +71,16 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         {t.profile.heroLine}
       </motion.div>
 
-      <h1 className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+      {/* The heading search engines and screen readers get: the name, once. The animated name below
+          is purely visual (aria-hidden), so its letters and size placeholders stay out of the <h1>. */}
+      <h1 className="sr-only">{profile.name}</h1>
+      <div
+        aria-hidden
+        data-depth="2"
+        className="max-w-4xl text-[clamp(2.75rem,11vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.045em] short:text-[clamp(2.25rem,min(11vw,17svh),7.5rem)]"
+      >
         <NameSwap
           names={NAMES}
-          label={profile.name}
           intro={
             <>
               <RevealText text="Jan" className="text-fg" delay={0.15} />{" "}
@@ -73,13 +88,13 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
             </>
           }
         />
-      </h1>
+      </div>
 
       <motion.p
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.55, ease: EASE }}
-        className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:mt-8 sm:text-xl"
+        className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:mt-8 sm:text-xl short:mt-4 short:max-w-2xl short:text-sm"
       >
         {t.hero.tagline}
       </motion.p>
@@ -88,7 +103,7 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.7, ease: EASE }}
-        className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10"
+        className="mt-8 flex flex-wrap items-center gap-3 sm:mt-10 short:mt-4"
       >
         <Button onClick={() => scrollTo("projects")} icon={<ArrowRight className="h-4 w-4" />}>
           {t.hero.viewProjects}
@@ -100,21 +115,23 @@ export default function HeroSection({ stats }: { stats: GithubStats }) {
         </Button>
       </motion.div>
 
-      <motion.dl
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, delay: 0.95 }}
-        className="mt-14 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-8 sm:mt-20 lg:grid-cols-4"
-      >
-        {facts.map((f) => (
-          <div key={f.label} className="flex flex-col-reverse justify-end">
-            <dt className="eyebrow mt-2">{f.label}</dt>
-            <dd className={`font-semibold tracking-tight text-fg ${f.small ? "text-base sm:text-xl" : "text-2xl sm:text-3xl"}`}>
-              {f.value}
-            </dd>
-          </div>
-        ))}
-      </motion.dl>
+      {!journey && (
+        <motion.dl
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, delay: 0.95 }}
+          className="mt-14 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-line pt-8 sm:mt-20 lg:grid-cols-4"
+        >
+          {facts.map((f) => (
+            <div key={f.label} className="flex flex-col-reverse justify-end">
+              <dt className="eyebrow mt-2">{f.label}</dt>
+              <dd className={`font-semibold tracking-tight text-fg ${f.small ? "text-base sm:text-xl" : "text-2xl sm:text-3xl"}`}>
+                {f.value}
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
+      )}
 
       <motion.button
         type="button"

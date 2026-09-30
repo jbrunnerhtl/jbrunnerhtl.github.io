@@ -47,19 +47,29 @@ jobs:
           npm run lint
 
       # Project sites live under /<repo>/ (e.g. /personal-wesite3.0/); a <user>.github.io repo lives at /.
-      - name: Compute base path
+      # The public site URL (for canonical URLs, sitemap, structured data) is the Pages URL, unless
+      # the repository variable SITE_URL names another one (e.g. a custom domain).
+      - name: Compute base path and site URL
         id: base
         env:
           REPO: ${{ github.event.repository.name }}
+          OWNER: ${{ github.repository_owner }}
+          CUSTOM_SITE_URL: ${{ vars.SITE_URL }}
         run: |
           if [[ "$REPO" == *.github.io ]]; then path=""; else path="/$REPO"; fi
+          owner=$(printf '%s' "$OWNER" | tr '[:upper:]' '[:lower:]')
+          site="${CUSTOM_SITE_URL:-https://$owner.github.io$path}"
           echo "path=$path" >> "$GITHUB_OUTPUT"
-          echo "Base path: '${path:-/}'"
+          echo "site=${site%/}" >> "$GITHUB_OUTPUT"
+          echo "Base path: '${path:-/}', site URL: '${site%/}'"
 
       - name: Build static export
         run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ steps.base.outputs.path }}
+          NEXT_PUBLIC_SITE_URL: ${{ steps.base.outputs.site }}
+          # Optional: set the repository variable to the token Google Search Console shows.
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
           # Read-only token, used server-side at build time to avoid GitHub API rate limits on shared runners.
           GITHUB_TOKEN: ${{ github.token }}
 

@@ -72,17 +72,15 @@ function alignGradients(root: HTMLElement) {
 /**
  * Alternates a heading between names: the letters of one name leave upwards while the next rises in.
  * The first name is shown by `intro` (server-rendered, CSS entrance). Every name reserves its space
- * invisibly so the heading never changes height. Screen readers only get `label`.
+ * invisibly so the heading never changes height. Purely visual: the page's real heading is separate.
  * Stays on the first name when reduced motion is preferred, and pauses off-screen or in a hidden tab.
  */
 export default function NameSwap({
   names,
   intro,
-  label,
 }: {
   names: NameSegment[][];
   intro: React.ReactNode;
-  label: string;
 }) {
   const boxRef = useRef<HTMLSpanElement>(null);
   // null while the intro is showing; `step` remounts the letters so their animations restart.
@@ -127,7 +125,6 @@ export default function NameSwap({
 
   return (
     <>
-      <span className="sr-only">{label}</span>
       <span ref={boxRef} aria-hidden className="grid">
         {names.map((name, i) => (
           <span key={`size-${i}`} className="invisible [grid-area:1/1]">

@@ -2,23 +2,25 @@
 
 ## Purpose
 The site shell and presentation layer: design system and color modes, readable contrast, smooth scrolling, responsive navigation, bilingual content (EN/DE), hero entrance and count-up stats, contact options, the 404 page and the browser icon.
+
 ## Requirements
-### Requirement: Design System with Color Modes
-The system SHALL style the site from color tokens with dark, light and system color modes. The chosen mode SHALL persist across visits, be applied before first paint (no flash of the wrong mode), and follow the operating system live while in system mode. Solid, translucent surfaces SHALL be used instead of backdrop blur over the 3D canvas.
+
+### Requirement: Dark Design System
+The system SHALL style the site from color tokens in a single dark mode that fits the space scene. There SHALL be no color mode toggle and no light mode, and the page SHALL render dark from the first paint regardless of the operating system's color scheme. Solid, translucent surfaces SHALL be used instead of backdrop blur over the 3D canvas.
 
 #### Scenario: User switches color mode
-- **WHEN** the user activates the color mode toggle in the navigation bar
-- **THEN** the mode cycles dark → light → system, the new mode is revealed with a circular transition from the toggle (or applied instantly when reduced motion is preferred or View Transitions are unsupported), and the choice is stored
+- **WHEN** the user looks for a color mode toggle in the navigation bar
+- **THEN** there is none: the navigation bar shows the section links, the GitHub link and the language switch only
 
 #### Scenario: Returning visitor loads the page
-- **WHEN** a visitor with a stored color mode opens the site
-- **THEN** the page renders in that mode from the first paint
+- **WHEN** a visitor whose operating system prefers a light color scheme opens the site
+- **THEN** the page renders in the dark design from the first paint, without a flash of light colors
 
 ### Requirement: Readable Text Contrast
-The system SHALL keep every text color token at a contrast ratio of at least 4.5:1 against both the page background and card surfaces, in both dark and light mode.
+The system SHALL keep every text color token at a contrast ratio of at least 4.5:1 against both the page background and card surfaces.
 
 #### Scenario: User reads small secondary text
-- **WHEN** small labels such as stat captions, years or the language pill are displayed in either color mode
+- **WHEN** small labels such as stat captions, years or the language pill are displayed
 - **THEN** their contrast against the background and cards is at least 4.5:1
 
 ### Requirement: Smooth Scrolling
@@ -29,7 +31,7 @@ The system SHALL provide smooth inertial scrolling with Lenis and smooth-scroll 
 - **THEN** the page moves smoothly with momentum while keeping native scroll positions and keyboard navigation working
 
 ### Requirement: Responsive Navigation and Layout
-The system SHALL adapt layout and navigation to every viewport from 320px to 2560px wide without horizontal overflow, scaling the rem-based layout up gently on screens 1920px and wider.
+The system SHALL adapt layout and navigation to every viewport from 320px to 2560px wide without horizontal overflow, scaling the rem-based layout up gently on screens 1920px and wider. On touch devices, every control in the navigation bar (logo link, GitHub link, language switch, menu button) SHALL have a touch target of at least 44×44px.
 
 #### Scenario: User navigates on desktop
 - **WHEN** viewing on screens 768px wide or larger
@@ -37,7 +39,11 @@ The system SHALL adapt layout and navigation to every viewport from 320px to 256
 
 #### Scenario: User navigates on mobile
 - **WHEN** viewing on screens under 768px
-- **THEN** a menu button opens a panel with the section links and GitHub link; it closes on selecting a link, tapping outside, pressing Escape, or growing past the breakpoint, and interactive targets are at least 40px
+- **THEN** a menu button opens a panel with the section links and GitHub link; it closes on selecting a link, tapping outside, pressing Escape, or growing past the breakpoint, and interactive targets are at least 40px (44×44px on touch devices)
+
+#### Scenario: User taps the language switch on a phone
+- **WHEN** the user taps EN or DE in the navbar on a touch device
+- **THEN** each option has a touch target of at least 44×44px, and the navbar still fits on a 320px wide screen without overflow
 
 ### Requirement: Bilingual Content
 The system SHALL serve all copy in English and German at `/en` and `/de`, both prerendered, with the correct `lang` attribute, title, description and Open Graph locale per language. Requests without a locale prefix SHALL redirect to the stored language choice, else the browser's preferred supported language, else English.
@@ -81,7 +87,7 @@ The system SHALL show the contact email address with a mailto action and a copy-
 - **THEN** the address is copied, a confirmation icon appears and "Copied!" is announced to screen readers for about two seconds
 
 ### Requirement: Localized Not Found Page
-The system SHALL respond to unknown URLs with a styled, localized 404 page in the current color mode, returning HTTP status 404 and marked noindex.
+The system SHALL respond to unknown URLs with a styled, localized 404 page in the site's dark design, returning HTTP status 404 and marked noindex.
 
 #### Scenario: Visitor opens a missing page
 - **WHEN** a visitor requests an unknown path such as `/de/missing` or an unsupported locale like `/fr`
@@ -93,4 +99,3 @@ The system SHALL use the GitHub profile picture as the browser tab icon and Appl
 #### Scenario: User views the site in a browser tab
 - **WHEN** the site is open in a browser tab or saved to a phone's home screen
 - **THEN** the round GitHub profile picture is shown as its icon
-

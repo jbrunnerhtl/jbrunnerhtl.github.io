@@ -62,19 +62,21 @@ export default function ContactSection({ followers }: { followers: number }) {
   return (
     <section id="contact" className="mx-auto max-w-6xl px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-20 sm:px-8 sm:pt-28 lg:px-10 lg:pt-36">
       <FadeIn className="card relative overflow-hidden px-5 py-14 text-center sm:px-12 sm:py-24">
-        <div className="eyebrow">
+        <div data-depth="1" className="eyebrow">
           <span className="text-accent">04</span>
           <span className="mx-2">/</span>
           {t.contact.label}
         </div>
-        <h2 className="mx-auto mt-6 max-w-3xl text-[clamp(2.25rem,8vw,3.75rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-fg">
+        <h2 data-depth="1.6" className="mx-auto mt-6 max-w-3xl text-[clamp(2.25rem,8vw,3.75rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-fg">
           {t.contact.title} <span className="text-chrome">{t.contact.titleHighlight}</span>
         </h2>
-        <p className="mx-auto mt-6 max-w-md text-muted">{t.contact.text}</p>
+        <p data-depth="2.2" className="mx-auto mt-6 max-w-md text-muted">{t.contact.text}</p>
 
-        <EmailCopy email={profile.email} />
+        <div data-depth="2.8">
+          <EmailCopy email={profile.email} />
+        </div>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div data-depth="3.4" className="mt-6 flex flex-wrap justify-center gap-3">
           <Button href={`mailto:${profile.email}`} icon={<ArrowUpRight className="h-4 w-4" />}>
             <span className="flex items-center gap-2">
               <Mail className="h-4 w-4" /> {t.contact.email}
@@ -86,7 +88,7 @@ export default function ContactSection({ followers }: { followers: number }) {
             </span>
           </Button>
         </div>
-        <p className="mt-6 text-xs text-faint">
+        <p data-depth="4" className="mt-6 text-xs text-faint">
           <CountUpText template={t.contact.followers} n={followers} />
         </p>
       </FadeIn>

@@ -1,49 +1,38 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useMemo, useState, useSyncExternalStore, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer } from "@react-three/drei";
-import LiquidChromeMesh, { sceneLayout } from "./LiquidChromeMesh";
-import ParticleField from "./ParticleField";
+import * as THREE from "three";
+import { sceneLayout } from "./sceneLayout";
+import { buildRoute, type Route } from "./route";
+import Starfield from "./Starfield";
+import SkyBackground from "./SkyBackground";
+import Nebulae from "./Nebulae";
+import Galaxies from "./Galaxies";
+import { SPACE } from "./spaceTheme";
 import FallbackBackground from "./FallbackBackground";
+import { journeyStore } from "@/lib/journeyStore";
 import { isWebGLAvailable } from "@/lib/webgl";
 import { motionStore } from "@/lib/motionStore";
-import { useResolvedTheme, type ResolvedTheme } from "@/lib/theme";
 
-// Per-mode studio lighting for the chrome orb.
-const SCENE: Record<ResolvedTheme, { dome: string; top: string; bottom: string; strips: string[]; particles: string }> = {
-  dark: {
-    dome: "#1a1d24",
-    top: "#dfe7f5",
-    bottom: "#4b3f72",
-    strips: ["#ffffff", "#9fd8ff", "#c4b5fd", "#ffffff"],
-    particles: "#b9c3d6",
-  },
-  light: {
-    dome: "#9aa3b2",
-    top: "#ffffff",
-    bottom: "#5b4d9a",
-    strips: ["#ffffff", "#5aa9ff", "#a78bfa", "#ffffff"],
-    particles: "#4b5563",
-  },
-};
+const flight = { pos: new THREE.Vector3(), tangent: new THREE.Vector3(), look: new THREE.Vector3() };
 
-const STRIP_POSITIONS: [number, number][] = Array.from({ length: 8 }, (_, i) => {
-  const a = (i / 8) * Math.PI * 2;
-  return [Math.cos(a) * 6, Math.sin(a) * 6];
-});
+/**
+ * Flies the camera straight along the route with the scroll position (slowly through each held
+ * station, faster in between), looking ahead. Also advances the pausable scene clock.
+ * Mounted before the scene objects, so they read this frame's camera and time.
+ */
+function FlightDriver({ route }: { route: Route }) {
+  useFrame((state, delta) => {
+    motionStore.sceneTime += Math.min(delta, 1 / 20);
+    const u = journeyStore.stations.length ? journeyStore.routeU(motionStore.scrollPx) : 0;
 
-// Base / max scrim opacity per layout: stronger where the orb sits behind text.
-const SCRIM = { mobile: [0.4, 0.7], tablet: [0.25, 0.65], desktop: [0.12, 0.62] } as const;
-
-/** Dims the scene over the first ~700px of scroll by writing opacity straight to the DOM (no re-renders). */
-function ScrimDriver() {
-  useFrame((state) => {
-    const el = document.getElementById("scene-scrim");
-    if (!el) return;
-    const [base, max] = SCRIM[sceneLayout(state.size.width, state.size.height)];
-    const dim = Math.min(motionStore.scrollPx / 700, 1);
-    el.style.opacity = String(base + dim * (max - base));
+    const t = Math.min(u / (route.count - 1), 1);
+    route.curve.getPoint(t, flight.pos);
+    route.curve.getTangent(t, flight.tangent);
+    const cam = state.camera;
+    cam.position.copy(flight.pos);
+    cam.lookAt(flight.look.copy(flight.pos).add(flight.tangent));
   });
   return null;
 }
@@ -53,44 +42,63 @@ const SETTLE_MS = 1600;
 
 /**
  * Drives the render loop (the Canvas uses frameloop="demand"):
- * full frame rate while the hero is on screen; elsewhere half rate, and only while the user
- * scrolls or moves the pointer (plus SETTLE_MS). Idle, the dimmed orb costs no GPU time at all.
+ * always while the hero is on screen (with a mouse or trackpad; touch devices save their battery);
+ * otherwise only while the user scrolls, moves the pointer or touches the screen (plus SETTLE_MS,
+ * so damped motion can settle). Idle, the scene costs no GPU time at all.
  */
 function FrameDriver({ wakeKey }: { wakeKey: string }) {
   const invalidate = useThree((s) => s.invalidate);
 
   useEffect(() => {
     let raf = 0;
-    let activeUntil = performance.now() + SETTLE_MS; // also re-bakes the env map after a theme change
+    let activeUntil = performance.now() + SETTLE_MS; // also covers the first frames after the stations change
     let last = { px: -1, x: 0, y: 0 };
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const onTouch = () => {
+      activeUntil = performance.now() + SETTLE_MS;
+    };
+    window.addEventListener("touchstart", onTouch, { passive: true });
 
-    let frame = 0;
     const tick = (now: number) => {
       const { scrollPx, pointerX, pointerY } = motionStore;
       if (scrollPx !== last.px || pointerX !== last.x || pointerY !== last.y) {
         activeUntil = now + SETTLE_MS;
         last = { px: scrollPx, x: pointerX, y: pointerY };
       }
-      const inHero = scrollPx < window.innerHeight * 0.9;
-      // Past the hero the orb is dimmed and moves slowly: half the frame rate is indistinguishable
-      // there and leaves the page itself more headroom while scrolling.
-      if (inHero || (now < activeUntil && frame++ % 2 === 0)) invalidate();
+      const inHero = finePointer && scrollPx < window.innerHeight * 0.9;
+      // Full rate everywhere while active: the flight visibly stutters at half rate.
+      if (inHero || now < activeUntil) invalidate();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("touchstart", onTouch);
+    };
   }, [invalidate, wakeKey]);
 
   return null;
 }
 
+const subscribeJourney = (fn: () => void) => journeyStore.subscribe(fn);
+const journeyVersion = () => journeyStore.version;
+
 export default function CanvasContainer() {
   // Loaded with ssr: false, so window is always available here.
   const [hasWebGL] = useState(isWebGLAvailable);
   const [isMobile] = useState(() => window.innerWidth < 768);
+  const [layout] = useState(() => sceneLayout(window.innerWidth, window.innerHeight));
   const [ready, setReady] = useState(false);
-  const theme = useResolvedTheme();
-  const scene = SCENE[theme];
+  const space = SPACE;
+
+  // One waypoint per station: rebuilt when the journey's stations change (e.g. across the breakpoint).
+  const version = useSyncExternalStore(subscribeJourney, journeyVersion, journeyVersion);
+  const namesKey = useMemo(() => {
+    void version;
+    return journeyStore.stations.map((s) => s.name).join(",");
+  }, [version]);
+  const names = useMemo(() => (namesKey ? namesKey.split(",") : ["hero"]), [namesKey]);
+  const route = useMemo(() => buildRoute(names.length), [names]);
 
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none select-none" aria-hidden>
@@ -98,46 +106,33 @@ export default function CanvasContainer() {
 
       {hasWebGL && (
         <Canvas
-          camera={{ position: [0, 0, 5.5], fov: 42 }}
+          camera={{ position: [0, 0, 0], fov: 42, far: 1200 }}
           frameloop="demand"
-          dpr={[1, 1.5]}
+          dpr={isMobile ? [1, 1.25] : [1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           onCreated={() => requestAnimationFrame(() => setReady(true))}
           className="transition-opacity duration-[1400ms] ease-out"
           style={{ opacity: ready ? 1 : 0 }}
         >
           <Suspense fallback={null}>
-            {/* Procedural studio environment: no HDR download. A soft gradient dome plus a ring of
-                light strips gives smooth, liquid reflections instead of hard shapes. */}
-            {/* Keyed by mode: the env map is rendered once (frames=1), so remount to re-bake it. */}
-            <Environment key={theme} resolution={256} frames={1}>
-              <color attach="background" args={[scene.dome]} />
-              <Lightformer form="rect" intensity={1.2} position={[0, 6, 0]} rotation-x={Math.PI / 2} scale={[20, 20, 1]} color={scene.top} />
-              {STRIP_POSITIONS.map(([x, z], i) => (
-                <Lightformer
-                  key={i}
-                  form="rect"
-                  intensity={2.2}
-                  position={[x, 0, z]}
-                  onUpdate={(self) => self.lookAt(0, 0, 0)}
-                  scale={[1.2, 10, 1]}
-                  color={scene.strips[i % scene.strips.length]}
-                />
-              ))}
-              <Lightformer form="rect" intensity={0.8} position={[0, -6, 0]} rotation-x={-Math.PI / 2} scale={[20, 20, 1]} color={scene.bottom} />
-            </Environment>
-
-            <FrameDriver wakeKey={theme} />
-            <ScrimDriver />
-            <LiquidChromeMesh />
-            <ParticleField count={isMobile ? 180 : 400} color={scene.particles} />
+            <SkyBackground
+              sky={space.sky}
+              nebulaA={space.nebulaA}
+              nebulaB={space.nebulaB}
+              stars={space.skyStars}
+              size={isMobile ? 512 : 1024}
+            />
+            <FrameDriver wakeKey={namesKey} />
+            <FlightDriver route={route} />
+            <Starfield count={isMobile ? 3000 : 8000} colors={space.stars} />
+            <Nebulae route={route} tints={space.nebulae} />
+            <Galaxies route={route} names={names} layout={layout} />
           </Suspense>
         </Canvas>
       )}
 
-      {/* Vignette, plus a scrim that dims the scene once you scroll past the hero. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--bg)_100%)]" />
-      <div id="scene-scrim" className="absolute inset-0 bg-bg opacity-[0.12] max-md:opacity-40" />
+      {/* Soft vignette; the station panels bring their own surfaces, so the scene isn't dimmed. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,color-mix(in_oklab,var(--bg)_65%,transparent)_100%)]" />
     </div>
   );
 }

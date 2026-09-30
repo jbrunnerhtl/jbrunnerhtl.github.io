@@ -25,21 +25,26 @@ export default function AboutSection() {
 
       <div className="grid gap-12 md:grid-cols-12 md:gap-10">
         <FadeIn delay={0.1} className="space-y-5 text-base leading-relaxed text-muted sm:text-lg md:col-span-7 lg:col-span-6 lg:col-start-4">
-          <p>
+          <p data-depth="2.4">
             {t.about.p1Before}
             <span className="text-fg">{t.about.p1Highlight}</span>
             {fmt(t.about.p1After, { year: profile.codingSince })}
           </p>
-          <p>{t.about.p2}</p>
+          <p data-depth="3">{t.about.p2}</p>
         </FadeIn>
 
         <StaggerContainer className="md:col-span-5 lg:col-span-3">
-          <div className="eyebrow mb-5">{t.about.timeline}</div>
+          <div data-depth="2" className="eyebrow mb-5">{t.about.timeline}</div>
           <div className="relative space-y-7 border-l border-line pl-6">
-            {t.about.milestones.map((m) => (
+            {/* Space journey only: the line draws itself as the station arrives (--fill, see globals.css). */}
+            <span aria-hidden className="timeline-fill" />
+            {t.about.milestones.map((m, i, all) => (
               <StaggerItem key={m.title}>
-                <div className="relative">
-                  <span className="absolute -left-[29px] top-1.5 h-2 w-2 rounded-full bg-accent ring-4 ring-bg" />
+                <div data-depth={2.6 + i * 0.6} className="relative">
+                  <span
+                    className="timeline-dot absolute -left-[29px] top-1.5 h-2 w-2 rounded-full bg-accent ring-4 ring-bg"
+                    style={{ "--at": i / all.length } as React.CSSProperties}
+                  />
                   <div className="font-mono text-xs text-faint">{m.year}</div>
                   <div className="mt-1 font-medium text-fg">{m.title}</div>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{m.description}</p>
