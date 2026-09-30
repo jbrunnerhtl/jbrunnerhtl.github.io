@@ -73,9 +73,9 @@
 
   Store them in `src/data/snippets.ts` with repo, file path and language. Verify that each excerpt's lines exist in the named file of the repository (spot-check with `curl` on raw.githubusercontent.com in a scratchpad script).
 - [x] 4.2 Add a server-only `highlight()` using shiki `codeToHtml` with dual themes (`defaultColor: false`, JS regex engine), and add the CSS that selects `--shiki-light`/`--shiki-dark` by `data-theme`. Verify that the built HTML contains highlighted spans, that no shiki code appears in client chunks (grep `out/_next/static`), and that both modes are readable in WebKit.
-- [ ] 4.3 Build the mockup frames `Laptop` (lid opens on reveal), `Window` and `Terminal`. They are CSS-only, with inner horizontal code scroll, an `aria-label` and the file name or command in the title bar. Verify at 1440 and 390px in both modes that nothing overflows the page, and in WebKit that the lid animation runs once and is skipped with reduced motion.
+- [x] 4.3 Build the mockup frames `Laptop` (lid opens on reveal), `Window` and `Terminal`. They are CSS-only, with inner horizontal code scroll, an `aria-label` and the file name or command in the title bar. Verify at 1440 and 390px in both modes that nothing overflows the page, and in WebKit that the lid animation runs once and is skipped with reduced motion.
 - [x] 4.4 Extend `PORTFOLIO_DATA.projects` (slug, mockup kind and snippet, detail snippets). Add a `summary` per project to both dictionaries, one sentence verified against the repository. Verify with `npx tsc --noEmit`.
-- [ ] 4.5 Build `ProjectSection`:
+- [x] 4.5 Build `ProjectSection`:
   - an accent SVG divider with number, then title, summary, language, year and team badge
   - an angled "View project" link to `/<lang>/projects/<slug>/`
   - the mockup, alternating sides and stacking on narrow screens
@@ -83,7 +83,7 @@
   - reveals
 
   Replace `ProjectsSection` with six of these plus the restyled `MoreRepos` list. Verify in WebKit at 1440/1024/390 in both modes, and check that `#projects` targets the first section.
-- [ ] 4.6 Commit locally ("Show projects as full-height sections with code mockups"). Verify that the build passes.
+- [x] 4.6 Commit locally ("Show projects as full-height sections with code mockups"). Verify that the build passes.
 
 ## 5. About, skills and timeline, contact
 
