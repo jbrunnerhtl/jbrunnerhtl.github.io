@@ -12,10 +12,10 @@ export default function RootRedirect() {
       {/* Without JavaScript: plain links (and no auto-redirect guessing). */}
       <main className="grid min-h-[100svh] place-items-center p-6">
         <nav className="flex gap-3 text-sm" aria-label="Language">
-          <a className="rounded-full border border-line px-4 py-2 hover:bg-tint/[0.06]" href={localePath("en")} hrefLang="en">
+          <a className="rounded-full border border-line px-4 py-2 hover:bg-fg/[0.06]" href={localePath("en")} hrefLang="en">
             English
           </a>
-          <a className="rounded-full border border-line px-4 py-2 hover:bg-tint/[0.06]" href={localePath("de")} hrefLang="de">
+          <a className="rounded-full border border-line px-4 py-2 hover:bg-fg/[0.06]" href={localePath("de")} hrefLang="de">
             Deutsch
           </a>
         </nav>

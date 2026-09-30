@@ -118,19 +118,19 @@
 
 ## 8. Cleanup and final checks
 
-- [ ] 8.1 Remove the dead code and assets:
+- [x] 8.1 Remove the dead code and assets:
   - `MotionWrapper`, `RevealText`, `NameSwap`, `SectionHeader` and other unused components
   - the `lenis` and `@react-three/drei` dependencies
   - the unused `public/*.svg`
   - leftover CSS
 
   Verify that `npx next typegen && npx tsc --noEmit && npm run lint && npm run build` pass and that `npx depcheck` (or a grep) shows no unused dependencies.
-- [ ] 8.2 Run a WebKit screenshot matrix over `/en/`, `/de/` and two project pages:
+- [x] 8.2 Run a WebKit screenshot matrix over `/en/`, `/de/` and two project pages:
   - dark and light, at 1440, 1024, 390 and 320px
   - no-JS, reduced motion, and WebGL disabled
 
   Review every screenshot, and fix and re-shoot anything broken. Verify that the matrix is clean and that no page errors are logged.
-- [ ] 8.3 Commit locally ("Remove leftovers of the space journey"). Report to the owner: screenshots of the key views, what changed, and the German copy to review. The owner merges and pushes.
+- [x] 8.3 Commit locally ("Remove leftovers of the space journey"). Report to the owner: screenshots of the key views, what changed, and the German copy to review. The owner merges and pushes.
 - [ ] 8.4 At archive time, after `improve-search-visibility` is archived:
   - delete the empty `openspec/specs/station-journey/`
   - update the `Purpose` of `canvas-3d-experience` and `portfolio-ui`

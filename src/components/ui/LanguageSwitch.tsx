@@ -37,7 +37,7 @@ export default function LanguageSwitch() {
             {active && (
               <motion.span
                 layoutId="lang-pill"
-                className="absolute inset-0 rounded-full bg-tint/[0.08]"
+                className="absolute inset-0 rounded-full bg-fg/[0.08]"
                 transition={{ type: "spring", stiffness: 420, damping: 36 }}
               />
             )}
