@@ -12,7 +12,7 @@ import { OG_IMAGE_SIZE } from "@/lib/site";
 export const dynamic = "force-static";
 
 const size = OG_IMAGE_SIZE;
-const ACCENT = "#2de2f0";
+const ACCENT = "#e879f9";
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
@@ -47,7 +47,7 @@ export async function GET(_request: Request, { params }: RouteContext<"/[lang]/o
             height: 590,
             borderRadius: "50%",
             backgroundImage:
-              "radial-gradient(circle at 32% 30%, rgba(45, 226, 240, 0.55) 0%, rgba(45, 226, 240, 0) 45%), radial-gradient(circle at 50% 50%, #34403f 0%, rgba(52, 64, 63, 0.4) 60%, rgba(17, 17, 17, 0) 71%)",
+              "radial-gradient(circle at 32% 30%, rgba(232, 121, 249, 0.55) 0%, rgba(232, 121, 249, 0) 45%), radial-gradient(circle at 50% 50%, #3c3440 0%, rgba(60, 52, 64, 0.4) 60%, rgba(17, 17, 17, 0) 71%)",
           }}
         />
         {/* The section divider: a thin line with a notched bar under its start. */}

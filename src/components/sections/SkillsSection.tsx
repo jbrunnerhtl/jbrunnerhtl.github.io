@@ -26,7 +26,7 @@ export default function SkillsSection() {
           <ol className="relative mt-8 space-y-10 border-l border-line pl-8">
             {t.about.milestones.map((m) => (
               <li key={m.title} className="relative">
-                <span aria-hidden className="absolute -left-[37px] top-1.5 h-2 w-2 bg-accent ring-4 ring-bg" />
+                <span aria-hidden className="absolute -left-[37px] top-1.5 h-2 w-2 bg-accent-text ring-4 ring-bg" />
                 <div className="font-mono text-xs text-faint">{m.year}</div>
                 <div className="mt-2 font-medium text-fg">{m.title}</div>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{m.description}</p>

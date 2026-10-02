@@ -96,7 +96,7 @@ export default function ProjectPage({ id, html }: { id: ProjectId; html: Record<
           <ul data-reveal style={delay(1)} className="mt-8 space-y-4 text-lg leading-relaxed text-muted">
             {copy.features.map((f) => (
               <li key={f} className="flex gap-4">
-                <span aria-hidden className="mt-3 h-1.5 w-1.5 shrink-0 bg-accent" />
+                <span aria-hidden className="mt-3 h-1.5 w-1.5 shrink-0 bg-accent-text" />
                 {f}
               </li>
             ))}
