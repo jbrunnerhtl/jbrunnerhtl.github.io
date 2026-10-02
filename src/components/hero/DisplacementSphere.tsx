@@ -9,8 +9,8 @@ import { NOISE_GLSL } from "./noise.glsl";
 function readColors() {
   const css = getComputedStyle(document.documentElement);
   return {
-    base: css.getPropertyValue("--sphere-base").trim() || "#3a4447",
-    light: css.getPropertyValue("--sphere-light").trim() || "#2de2f0",
+    base: css.getPropertyValue("--sphere-base").trim() || "#3f3a47",
+    light: css.getPropertyValue("--sphere-light").trim() || "#e879f9",
   };
 }
 

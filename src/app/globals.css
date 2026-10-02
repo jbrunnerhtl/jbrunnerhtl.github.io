@@ -33,11 +33,11 @@
   --muted: #b3b3b3;
   --faint: #8c8c8c;
   --line: rgb(255 255 255 / 0.14);
-  --accent: #2de2f0;
-  --accent-fg: #071417;
-  --accent-text: #2de2f0;
-  --sphere-base: #3a4447;
-  --sphere-light: #2de2f0;
+  --accent: #a21caf;
+  --accent-fg: #ffffff;
+  --accent-text: #e879f9;
+  --sphere-base: #3f3a47;
+  --sphere-light: #e879f9;
   --scrollbar: rgb(255 255 255 / 0.16);
   color-scheme: dark;
 }
@@ -49,11 +49,11 @@
   --muted: #474747;
   --faint: #666666;
   --line: rgb(0 0 0 / 0.14);
-  --accent: #2de2f0;
-  --accent-fg: #071417;
-  --accent-text: #00707e;
-  --sphere-base: #eaf2f3;
-  --sphere-light: #2de2f0;
+  --accent: #a21caf;
+  --accent-fg: #ffffff;
+  --accent-text: #a21caf;
+  --sphere-base: #f0eaf3;
+  --sphere-light: #e879f9;
   --scrollbar: rgb(0 0 0 / 0.18);
   color-scheme: light;
 }
@@ -292,7 +292,7 @@ html.js [data-reveal="line"][data-revealed] {
   bottom: 0.25rem;
   right: 0.125rem;
   width: 2px;
-  background: var(--accent);
+  background: var(--accent-text);
   scale: 1 0;
   transform-origin: top;
   transition: scale 0.5s var(--ease-out-expo);
@@ -510,7 +510,7 @@ html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
   display: block;
   width: 5.5rem;
   height: 1px;
-  background: var(--accent);
+  background: var(--accent-text);
 }
 .section-divider::before {
   content: "";
@@ -519,7 +519,7 @@ html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
   top: 0;
   width: 3.25rem;
   height: 0.5rem;
-  background: var(--accent);
+  background: var(--accent-text);
   clip-path: polygon(0 0, 100% 0, 82% 100%, 12% 100%);
 }
 
