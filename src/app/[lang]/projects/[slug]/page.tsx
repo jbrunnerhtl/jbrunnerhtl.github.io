@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import ProjectPage from "@/components/project/ProjectPage";
 import ProjectStructuredData from "@/components/seo/ProjectStructuredData";
 import { PORTFOLIO_DATA, type ProjectItem } from "@/data/portfolioData";
-import { highlightAll } from "@/lib/highlight";
 import { LOCALES, hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { OG_IMAGE_SIZE, siteUrl } from "@/lib/site";
@@ -54,13 +53,10 @@ export default async function Project({ params }: PageProps<"/[lang]/projects/[s
   const project = findProject(slug);
   if (!project || !hasLocale(lang)) notFound();
 
-  // Highlighted at build time, like the home page mockups.
-  const html = await highlightAll([project.mockup.snippet, ...project.details]);
-
   return (
     <main>
       <ProjectStructuredData project={project} lang={lang} />
-      <ProjectPage id={project.id} html={html} />
+      <ProjectPage id={project.id} />
     </main>
   );
 }

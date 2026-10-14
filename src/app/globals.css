@@ -357,148 +357,364 @@ section[id] {
   }
 }
 
-/* ---------- Code mockups ---------- */
-/* Shiki emits both modes as variables; pick the active one. Terminals stay dark in either mode. */
-.shiki,
-.shiki span {
-  color: var(--shiki-dark);
-}
-:root[data-theme="light"] .shiki,
-:root[data-theme="light"] .shiki span {
-  color: var(--shiki-light);
-}
-:root[data-theme="light"] .mockup-terminal .shiki,
-:root[data-theme="light"] .mockup-terminal .shiki span {
-  color: var(--shiki-dark);
-}
-
-.mockup-code {
-  --code-bg: #151718;
-  background: var(--code-bg);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.65;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-:root[data-theme="light"] .mockup-code {
-  --code-bg: #ffffff;
-}
-.mockup-terminal .mockup-code,
-:root[data-theme="light"] .mockup-terminal .mockup-code {
-  --code-bg: #0c0d0e;
-}
-@media (min-width: 640px) {
-  .mockup-code {
-    font-size: 0.8125rem;
-  }
-}
-.mockup-code pre {
+/* ---------- Architecture diagrams ----------
+   Layers of blocks on a dotted panel. Arrows join blocks in a row, labelled links join layers.
+   An active block (state in ArchitectureDiagram) lights itself, its neighbours and their links,
+   and dims the rest. Lines and arrowheads are pseudo-elements; every word is real text. */
+.arch {
+  container-type: inline-size;
+  position: relative;
   margin: 0;
-  padding: 1rem 1.25rem 1.25rem;
-  width: max-content;
-  min-width: 100%;
-  background: transparent !important;
-  tab-size: 4;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--fg) 9%, transparent) 1px, transparent 0) 0 0 / 18px 18px,
+    var(--surface);
+  box-shadow: 0 40px 100px -40px rgb(0 0 0 / 0.6);
 }
-/* Home page: a fixed-height window into the code that fades out at the bottom. */
-.mockup-code-clip {
-  max-height: 22rem;
-  overflow-y: hidden;
-  mask-image: linear-gradient(to bottom, #000 78%, transparent);
+:root[data-theme="light"] .arch {
+  box-shadow: 0 40px 90px -45px rgb(0 0 0 / 0.25);
 }
 
-.mockup-bar {
+.arch-layer {
+  position: relative;
+  margin-top: 0.5rem;
+  padding: 1.5rem 0.875rem 0.875rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.75rem;
+}
+.arch-layer-name {
+  position: absolute;
+  top: -0.6rem;
+  left: 0.75rem;
+  padding: 0 0.5rem;
+  background: var(--surface);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.arch-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.625rem;
+}
+.arch-row + .arch-row {
+  margin-top: 0.75rem;
+}
+.arch-note {
+  margin: 0.75rem 0 0;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.arch-block {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  background: var(--bg);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    opacity 0.35s var(--ease-out-expo),
+    border-color 0.35s var(--ease-out-expo),
+    box-shadow 0.35s var(--ease-out-expo);
+}
+.arch-block:hover {
+  border-color: color-mix(in oklab, var(--accent-text) 55%, var(--line));
+}
+.arch-block:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+.arch-block.is-external {
+  border-style: dashed;
+  background: transparent;
+}
+.arch-block-name {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  height: 2.25rem;
-  padding: 0 0.875rem;
-  background: color-mix(in oklab, var(--surface) 80%, var(--fg) 6%);
-  border-bottom: 1px solid var(--line);
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.arch-block-name::before {
+  content: "";
+  flex: none;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--faint);
+  transition: background-color 0.35s, box-shadow 0.35s;
+}
+.arch-block-label {
   color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-.mockup-bar-dark {
-  background: #1b1d1f;
-  border-bottom-color: rgb(255 255 255 / 0.08);
-  color: #8c8c8c;
-}
-
-.mockup-window {
-  overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid var(--line);
-  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.45);
-}
-:root[data-theme="light"] .mockup-window {
-  box-shadow: 0 30px 70px -25px rgb(0 0 0 / 0.25);
+/* Parts of a "a · b" label stay whole; a part wider than the block may still wrap inside. */
+.arch-part {
+  display: inline-block;
 }
 
-/* Laptop: screen in a dark bezel on a thin base; the lid swings open when revealed. */
-.mockup-laptop {
-  perspective: 1800px;
-}
-.mockup-lid {
-  transform-origin: 50% 100%;
-  padding: 0.6rem 0.6rem 0.9rem;
-  border-radius: 1rem 1rem 0.25rem 0.25rem;
-  background: #1c1d1f;
-  border: 1px solid rgb(255 255 255 / 0.1);
-  box-shadow: 0 30px 80px -25px rgb(0 0 0 / 0.5);
-}
-.mockup-screen {
-  overflow: hidden;
-  border-radius: 0.35rem;
-}
-.mockup-base {
+/* Arrow between two blocks of a row; a return link under a repeating row. */
+.arch-arrow {
   position: relative;
-  height: 0.9rem;
-  margin: 0 -7%;
-  border-radius: 0 0 1.25rem 1.25rem;
-  background: linear-gradient(to bottom, #3a3c3f, #1e1f21);
+  flex: none;
+  align-self: center;
+  width: 1.375rem;
+  height: 1px;
+  background: var(--line);
+  transition: background-color 0.35s, opacity 0.35s;
 }
-.mockup-base::after {
-  /* The notch for opening the lid (decorative). */
+.arch-arrow::after {
   content: "";
   position: absolute;
-  left: 50%;
+  top: -3px;
+  right: -1px;
+  border: 3.5px solid transparent;
+  border-right: 0;
+  border-left: 5px solid var(--line);
+  transition: border-color 0.35s;
+}
+.arch-arrow.is-dashed {
+  background: repeating-linear-gradient(90deg, var(--line) 0 3px, transparent 3px 6px);
+}
+/* Link between two layers: a short vertical line with an optional label. */
+.arch-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  transition: opacity 0.35s;
+}
+.arch-link::before {
+  content: "";
+  position: absolute;
   top: 0;
-  width: 14%;
-  height: 0.3rem;
-  translate: -50% 0;
-  border-radius: 0 0 0.5rem 0.5rem;
-  background: #141516;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--line);
+  transition: background-color 0.35s;
+}
+.arch-link > span,
+.arch-loop > span {
+  position: relative;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  transition: color 0.35s, border-color 0.35s;
 }
 
-html.js [data-reveal="device"] {
-  opacity: 0;
-  translate: 0 2.5rem;
-  transition:
-    opacity 1s var(--ease-out-expo),
-    translate 1.2s var(--ease-out-expo);
-  transition-delay: calc(var(--i, 0) * 90ms);
+.arch-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
 }
-html.js [data-reveal="device"][data-revealed] {
-  opacity: 1;
-  translate: 0 0;
+.arch-chips li {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
 }
-html.js .mockup-laptop[data-reveal="device"] {
-  translate: 0 0;
+
+/* Active state. */
+.arch-block.is-active {
+  border-color: var(--accent-text);
+  box-shadow:
+    0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent),
+    0 12px 30px -12px color-mix(in oklab, var(--accent) 60%, transparent);
 }
-html.js .mockup-laptop[data-reveal="device"] .mockup-lid {
-  rotate: x -88deg;
-  transition: rotate 1.6s var(--ease-out-expo) 0.15s;
+.arch-block.is-active .arch-block-name::before {
+  background: var(--accent-text);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 35%, transparent);
 }
-html.js .mockup-laptop[data-reveal="device"][data-revealed] .mockup-lid {
-  rotate: x 0deg;
+.arch-block.is-near {
+  border-color: color-mix(in oklab, var(--accent-text) 50%, var(--line));
 }
+.arch-block.is-near .arch-block-name::before {
+  background: var(--accent-text);
+}
+.arch-block.is-dim {
+  opacity: 0.3;
+}
+.arch-arrow.is-lit {
+  background: var(--accent-text);
+}
+.arch-arrow.is-lit::after {
+  border-left-color: var(--accent-text);
+}
+.arch-arrow.is-dashed.is-lit {
+  background: repeating-linear-gradient(90deg, var(--accent-text) 0 3px, transparent 3px 6px);
+}
+.arch-link.is-lit::before {
+  background: var(--accent-text);
+}
+.arch-link.is-lit > span,
+.arch-loop.is-lit > span {
+  border-color: color-mix(in oklab, var(--accent-text) 50%, var(--line));
+  color: var(--accent-text);
+}
+.arch-arrow.is-dim,
+.arch-link.is-dim,
+.arch-loop.is-dim {
+  opacity: 0.35;
+}
+
+/* Explanation of the active block: collapses to nothing while no block is active. */
+.arch-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--ease-out-expo);
+}
+.arch.has-active .arch-detail {
+  grid-template-rows: 1fr;
+}
+.arch-detail > div {
+  overflow: hidden;
+}
+.arch-detail-inner {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  border-left: 2px solid var(--accent-text);
+  border-radius: 0 0.625rem 0.625rem 0;
+  background: color-mix(in oklab, var(--accent) 7%, var(--surface));
+}
+.arch-detail-name {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.arch-detail-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* A repeating row: the return link runs below the blocks, from the last back to the first. */
+.arch-row:has(.arch-loop) {
+  position: relative;
+  flex-wrap: wrap;
+}
+.arch-row .arch-loop {
+  display: flex;
+  justify-content: center;
+  flex: 0 0 100%;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--line);
+  transition: opacity 0.35s, border-color 0.35s;
+}
+.arch-row .arch-loop.is-lit {
+  border-top-color: var(--accent-text);
+}
+
+/* Narrow column: blocks stack and arrows point down. Rows of four or more blocks stack earlier,
+   so names and labels never break inside a word. */
+@container (max-width: 34rem) {
+  .arch-row {
+    flex-direction: column;
+  }
+}
+@container (max-width: 48rem) {
+  .arch-row.is-long {
+    flex-direction: column;
+  }
+}
+@container (max-width: 34rem) {
+  .arch-row:has(.arch-loop) {
+    flex-wrap: nowrap;
+  }
+  .arch-row .arch-arrow {
+    width: 1px;
+    height: 0.875rem;
+  }
+  .arch-row .arch-arrow::after {
+    top: auto;
+    right: -3px;
+    bottom: -1px;
+    border: 3.5px solid transparent;
+    border-bottom: 0;
+    border-top: 5px solid var(--line);
+  }
+  .arch-row .arch-arrow.is-lit::after {
+    border-top-color: var(--accent-text);
+  }
+  .arch-row .arch-arrow.is-dashed {
+    background: repeating-linear-gradient(180deg, var(--line) 0 3px, transparent 3px 6px);
+  }
+  .arch-row .arch-arrow.is-dashed.is-lit {
+    background: repeating-linear-gradient(180deg, var(--accent-text) 0 3px, transparent 3px 6px);
+  }
+}
+@container (max-width: 48rem) {
+  .arch-row.is-long {
+    flex-wrap: nowrap;
+  }
+  .arch-row.is-long .arch-arrow {
+    width: 1px;
+    height: 0.875rem;
+  }
+  .arch-row.is-long .arch-arrow::after {
+    top: auto;
+    right: -3px;
+    bottom: -1px;
+    border: 3.5px solid transparent;
+    border-bottom: 0;
+    border-top: 5px solid var(--line);
+  }
+  .arch-row.is-long .arch-arrow.is-lit::after {
+    border-top-color: var(--accent-text);
+  }
+  .arch-row.is-long .arch-arrow.is-dashed {
+    background: repeating-linear-gradient(180deg, var(--line) 0 3px, transparent 3px 6px);
+  }
+  .arch-row.is-long .arch-arrow.is-dashed.is-lit {
+    background: repeating-linear-gradient(180deg, var(--accent-text) 0 3px, transparent 3px 6px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  html.js [data-reveal="device"],
-  html.js .mockup-laptop[data-reveal="device"] .mockup-lid {
-    opacity: 1;
-    translate: 0 0;
-    rotate: none;
+  .arch-block,
+  .arch-block-name::before,
+  .arch-arrow,
+  .arch-arrow::after,
+  .arch-link,
+  .arch-link::before,
+  .arch-link > span,
+  .arch-loop,
+  .arch-loop > span,
+  .arch-detail {
     transition: none;
   }
 }

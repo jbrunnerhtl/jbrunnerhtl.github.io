@@ -3,11 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import Mockup from "@/components/mockups/Mockup";
+import ArchitectureDiagram from "@/components/architecture/ArchitectureDiagram";
 import SectionDivider from "@/components/ui/SectionDivider";
 import { CountUpText } from "@/components/ui/AnimatedCounter";
 import { PORTFOLIO_DATA, repoUrl, type ProjectItem } from "@/data/portfolioData";
-import { SNIPPETS, type SnippetId } from "@/data/snippets";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt } from "@/i18n/config";
 
@@ -43,13 +42,7 @@ export function ProjectMeta({ p, className = "" }: { p: ProjectItem; className?:
   );
 }
 
-/** Title bar text of a mockup: the command for terminals, the file name otherwise. */
-export function mockupTitle(p: ProjectItem, snippet: SnippetId) {
-  if (p.mockup.kind === "terminal") return `zsh — ${p.repo.toLowerCase()}`;
-  return SNIPPETS[snippet].file.split("/").pop() ?? "";
-}
-
-function ProjectSection({ p, index, html }: { p: ProjectItem; index: number; html: string }) {
+function ProjectSection({ p, index }: { p: ProjectItem; index: number }) {
   const { t, lang } = useI18n();
   const copy = t.projects.items[p.id];
   const flip = index % 2 === 1;
@@ -84,23 +77,16 @@ function ProjectSection({ p, index, html }: { p: ProjectItem; index: number; htm
         </div>
 
         <div className={`relative lg:col-span-7 ${flip ? "lg:order-1" : ""}`}>
-          {/* The project's language as huge outlined lettering behind the mockup (decorative). */}
+          {/* The project's language as huge outlined lettering behind the diagram (decorative). */}
           <span
             aria-hidden
             className={`outline-letters absolute -bottom-[0.28em] z-0 ${flip ? "-left-4" : "-right-4"}`}
-            // Long names ("TYPESCRIPT") get smaller, so the word stays behind the mockup.
+            // Long names ("TYPESCRIPT") get smaller, so the word stays behind the diagram.
             style={{ fontSize: `clamp(4rem, ${(15 * Math.min(1, 5 / p.language.length)).toFixed(1)}vw, 15rem)` }}
           >
             {p.language.toUpperCase()}
           </span>
-          <Mockup
-            kind={p.mockup.kind}
-            html={html}
-            title={mockupTitle(p, p.mockup.snippet)}
-            label={fmt(t.projects.mockupLabel, { file: SNIPPETS[p.mockup.snippet].file.split("/").pop() ?? "", title: copy.title })}
-            clip
-            className="relative z-10"
-          />
+          <ArchitectureDiagram id={p.id} className="relative z-10" />
         </div>
       </div>
     </section>
@@ -146,11 +132,11 @@ function MoreRepos({ repoCount }: { repoCount: number }) {
 }
 
 /** Six full-height project sections, then the list of further repositories. */
-export default function ProjectsSection({ repoCount, mockups }: { repoCount: number; mockups: Record<string, string> }) {
+export default function ProjectsSection({ repoCount }: { repoCount: number }) {
   return (
     <>
       {PORTFOLIO_DATA.projects.map((p, i) => (
-        <ProjectSection key={p.id} p={p} index={i} html={mockups[p.mockup.snippet]} />
+        <ProjectSection key={p.id} p={p} index={i} />
       ))}
       <MoreRepos repoCount={repoCount} />
     </>

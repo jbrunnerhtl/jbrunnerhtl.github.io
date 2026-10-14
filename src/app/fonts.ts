@@ -7,7 +7,7 @@ export const montserrat = Montserrat({
   subsets: ["latin", "latin-ext"],
 });
 
-// Code in the mockups, section numbers and small labels.
+// Diagram labels, section numbers and small labels.
 export const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],

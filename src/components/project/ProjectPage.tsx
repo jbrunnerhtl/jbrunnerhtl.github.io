@@ -4,11 +4,10 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import GithubIcon from "@/components/icons/GithubIcon";
-import Mockup from "@/components/mockups/Mockup";
+import ArchitectureDiagram from "@/components/architecture/ArchitectureDiagram";
 import SectionDivider from "@/components/ui/SectionDivider";
-import { LangDot, mockupTitle } from "@/components/sections/ProjectsSection";
+import { LangDot } from "@/components/sections/ProjectsSection";
 import { PORTFOLIO_DATA, repoUrl, type ProjectId } from "@/data/portfolioData";
-import { SNIPPETS } from "@/data/snippets";
 import { useI18n } from "@/i18n/I18nProvider";
 import { fmt } from "@/i18n/config";
 
@@ -23,8 +22,8 @@ function Fact({ term, children }: { term: string; children: React.ReactNode }) {
   );
 }
 
-/** A project's detail page: header with facts, the mockup, features, how it's built, code, next. */
-export default function ProjectPage({ id, html }: { id: ProjectId; html: Record<string, string> }) {
+/** A project's detail page: header with facts, the architecture, features, how it's built, next. */
+export default function ProjectPage({ id }: { id: ProjectId }) {
   const { t, lang } = useI18n();
   const { projects } = PORTFOLIO_DATA;
   const index = projects.findIndex((p) => p.id === id);
@@ -34,7 +33,6 @@ export default function ProjectPage({ id, html }: { id: ProjectId; html: Record<
   const labels = t.projects.page;
   const repository = p.repoUrl ?? repoUrl(p.repo);
   const number = (i: number) => String(i + 1).padStart(2, "0");
-  const fileName = (snippet: keyof typeof SNIPPETS) => SNIPPETS[snippet].file.split("/").pop() ?? "";
 
   return (
     <article>
@@ -80,12 +78,7 @@ export default function ProjectPage({ id, html }: { id: ProjectId; html: Record<
       </header>
 
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-10 lg:px-16">
-        <Mockup
-          kind={p.mockup.kind}
-          html={html[p.mockup.snippet]}
-          title={mockupTitle(p, p.mockup.snippet)}
-          label={fmt(t.projects.mockupLabel, { file: fileName(p.mockup.snippet), title: copy.title })}
-        />
+        <ArchitectureDiagram id={id} />
       </div>
 
       <div className="mx-auto w-full max-w-3xl px-6 py-24 sm:px-10 lg:py-32">
@@ -114,27 +107,6 @@ export default function ProjectPage({ id, html }: { id: ProjectId; html: Record<
           </div>
         </section>
 
-        <section aria-labelledby="code-title" className="mt-24">
-          <h2 id="code-title" data-reveal className="text-[clamp(1.75rem,3vw,2.5rem)] font-medium tracking-[-0.02em]">
-            {labels.code}
-          </h2>
-          <div className="mt-10 space-y-14">
-            {p.details.map((snippet, i) => {
-              const s = SNIPPETS[snippet];
-              return (
-                <div key={snippet}>
-                  <Mockup kind="window" html={html[snippet]} title={fileName(snippet)} label={copy.snippetNotes[i]} />
-                  <p className="mt-4 text-muted">
-                    {copy.snippetNotes[i]}{" "}
-                    <a href={`${repository}/blob/${s.branch}/${s.file}`} target="_blank" rel="noopener noreferrer" className="link-accent whitespace-nowrap font-mono text-sm">
-                      {labels.source}: {fileName(snippet)}
-                    </a>
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
       </div>
 
       <nav aria-label={labels.next} className="border-t border-line">

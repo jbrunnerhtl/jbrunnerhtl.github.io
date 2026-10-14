@@ -19,19 +19,22 @@ The system SHALL prerender one detail page per featured project and language at 
 ### Requirement: Project Page Content
 Each project page SHALL show:
 - **Header:** the project title as the page's only `<h1>`, an introduction, and links to the GitHub repository and, if there is one, the live site. Beside it, a list of facts: main language, year, team size or "Solo", and the tech stack.
-- **Mockup:** the project's code mockup at full content width.
+- **Architecture:** the project's architecture diagram at full content width.
 - **Sections:** at least "Features" (what the project does, as a list) and "How it's built" (architecture and notable technical decisions). All of it is written from the repository's README and source, in the current language.
-- **Detail snippet:** at least one further code excerpt from the repository, with its file name, where it illustrates a point in the text.
 
-All text SHALL be real, selectable text.
+The page SHALL NOT show excerpts of the project's source code. All text SHALL be real, selectable text.
 
 #### Scenario: Visitor reads the Flashcards page
 - **WHEN** the Flashcards page is displayed in English
-- **THEN** it shows the title, the introduction, links to the organization repository and the documentation site, the facts (Java, 2026, Team · 4, the stack), the mockup, and the "Features" and "How it's built" sections with content matching the repository
+- **THEN** it shows the title, the introduction, links to the organization repository and the documentation site, the facts (Java, 2026, Team · 4, the stack), the architecture diagram, and the "Features" and "How it's built" sections with content matching the repository
 
 #### Scenario: Project page on a phone
 - **WHEN** a project page is viewed on a 390px wide screen
-- **THEN** the header, facts, mockup and sections stack in one column without horizontal overflow, and long code lines scroll inside their frame
+- **THEN** the header, facts, diagram and sections stack in one column without horizontal overflow
+
+#### Scenario: No code on a project page
+- **WHEN** any project page is displayed
+- **THEN** it contains no code excerpt and no "From the code" section
 
 ### Requirement: Project Navigation
 Each project page SHALL end with a link to the next project in featured order (the last one leads to the first), showing its number and title, and a link back to the projects on the home page. Page changes between the home page and project pages SHALL use a short fade transition and SHALL start at the top of the new page. Returning to the home page with the browser's back button SHALL restore the previous scroll position.
