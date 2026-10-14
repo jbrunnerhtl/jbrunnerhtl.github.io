@@ -75,14 +75,12 @@ export const de: Dictionary = {
     live: "Live",
     view: "Projekt ansehen",
     moreTitle: "Kleinere Projekte und Schularbeiten auf GitHub.",
-    mockupLabel: "Codeausschnitt aus {file} von {title}",
     team: "Team · {n}",
     more: "Weitere Repositories",
     all: "Alle {n} Repositories",
     page: {
       features: "Funktionen",
       built: "So ist es gebaut",
-      code: "Aus dem Code",
       facts: "Details",
       language: "Sprache",
       year: "Jahr",
@@ -93,7 +91,6 @@ export const de: Dictionary = {
       github: "Auf GitHub ansehen",
       next: "Nächstes Projekt",
       back: "Alle Projekte",
-      source: "Quelle",
     },
     items: {
       "driving-planner": {
@@ -114,19 +111,80 @@ export const de: Dictionary = {
           "Das Backend ist nach Features gegliedert (Fahrschulen, Programme, Anmeldungen, Kilometerlog, Termine, Aufgaben, Bewertungen, Benutzer, Auth), jedes mit Router, Service und Repository. Die Daten liegen über better-sqlite3 in SQLite, gekapselt in einer kleinen Unit-of-Work-Klasse, die jede Änderung in einer Transaktion ausführt. Passwörter werden mit bcrypt gehasht, Anfragen per JWT authentifiziert, und Swagger dokumentiert jeden Endpunkt.",
           "Fahrschulen ohne Koordinaten werden im Hintergrund über Nominatim von OpenStreetMap geokodiert, mit einer Anfrage pro Sekunde, wie es die Nutzungsbedingungen verlangen. Docker Compose startet den ganzen Stack, zum Entwickeln mit Hot Reload oder als Release, und Jest-Tests decken die wichtigsten Router ab.",
         ],
-        snippetNotes: [
-          "Die Haversine-Formel liefert die Luftlinie zwischen Benutzer und Fahrschule.",
-          "Fehlende Koordinaten werden bei Nominatim nachgeschlagen, mit einer Sekunde Pause zwischen den Anfragen.",
-        ],
+        architecture: {
+          label: "Architektur von Driving Planner",
+          layers: {
+            client: { name: "Client · Vue 3" },
+            api: {
+              name: "API · Express 5",
+              note: "Router, Service und Repository je Feature: Fahrschulen, Programme, Anmeldungen, Kilometerlog, Termine, Aufgaben, Bewertungen, Benutzer, Auth",
+            },
+            data: { name: "Daten" },
+            background: { name: "Hintergrund · Extern" },
+          },
+          blocks: {
+            views: {
+              name: "Views",
+              label: "Vue Router · PrimeVue · i18n",
+              text: "Die Seiten der Single-Page-App, gebaut aus PrimeVue-Komponenten und umgeschaltet von Vue Router. vue-i18n liefert Deutsch und Englisch.",
+            },
+            stores: {
+              name: "Stores",
+              label: "Pinia",
+              text: "Pinia-Stores halten den Zustand, den mehrere Seiten teilen, etwa die Fahrschulen, ihre Bewertungen und den angemeldeten Benutzer. Sie laden ihn über die API-Services.",
+            },
+            client: {
+              name: "API-Client",
+              label: "fetch · 5-Minuten-Cache",
+              text: "Ein Service pro Bereich ruft die REST-API über einen gemeinsamen Client auf, der das JWT aus der Sitzung mitschickt. Listen wie die Fahrschulen werden fünf Minuten im Speicher zwischengespeichert.",
+            },
+            router: {
+              name: "Router",
+              label: "JWT-Prüfung · Swagger",
+              text: "Ein Express-Router pro Feature. Eine Middleware prüft das JWT, und Routen nur für Admins prüfen zusätzlich die Rolle. Swagger dokumentiert jeden Endpunkt.",
+            },
+            service: {
+              name: "Service",
+              label: "Logik · Haversine",
+              text: "Die Logik eines Features. Für jede Anfrage öffnet er eine Unit of Work, nur lesend beim Lesen und mit Transaktion bei Änderungen. Der Fahrschul-Service sortiert die Fahrschulen nach ihrer Luftlinie zum Benutzer (Haversine-Formel).",
+            },
+            repository: {
+              name: "Repository",
+              label: "SQL je Feature",
+              text: "Führt die SQL-Abfragen eines Features über die Unit of Work aus, die ihm der Service übergibt.",
+            },
+            uow: {
+              name: "Unit of Work",
+              label: "eine Transaktion pro Änderung",
+              text: "Hält eine Datenbankverbindung. Bei Änderungen öffnet sie eine Transaktion, und am Ende entscheidet der Service, ob committet oder zurückgerollt wird.",
+            },
+            sqlite: {
+              name: "SQLite",
+              label: "better-sqlite3 · bcrypt",
+              text: "Alle Daten liegen in einer SQLite-Datei, angesprochen über better-sqlite3. Passwörter werden als bcrypt-Hash gespeichert.",
+            },
+            geocoder: {
+              name: "Geocoder",
+              label: "läuft im Hintergrund",
+              text: "Startet fünf Sekunden nach dem Server. Er sucht Koordinaten für Fahrschulen, die eine Adresse, aber noch keine Koordinaten haben, und schreibt jedes Ergebnis in einer eigenen kurzen Transaktion zurück.",
+            },
+            nominatim: {
+              name: "Nominatim",
+              label: "OpenStreetMap · 1 Anfrage/s",
+              text: "Der Geocoding-Dienst von OpenStreetMap. Der Geocoder wartet zwischen zwei Anfragen eine Sekunde, wie es die Nutzungsbedingungen verlangen.",
+            },
+          },
+          links: { rest: "REST · JWT", transaction: "Transaktion", coordinates: "Koordinaten" },
+        },
       },
       flashcards: {
         title: "Flashcards",
-        summary: "Eine JavaFX-Lern-App, die Karten, bei denen du dir schwertust, öfter abfragt.",
+        summary: "Eine JavaFX-App zum Lernen mit Karteikarten, mit bewerteten Antworten, Statistiken und Lernserie.",
         description:
-          "Eine JavaFX-Desktop-App zum Lernen mit digitalen Karteikarten, sortiert in Stapel. Sie wählt Karten mit einem gewichteten Auswahl-Algorithmus, zählt Lern-Streaks und Statistiken, importiert und exportiert Stapel und speichert sie als JSON mit Jackson. Gebaut nach dem MVP-Pattern, auf Deutsch und Englisch, mit hellem und dunklem Theme und Tests mit JUnit und Mockito.",
+          "Eine JavaFX-Desktop-App zum Lernen mit digitalen Karteikarten, sortiert in Stapel. Sie fragt jeden Stapel in zufälliger Reihenfolge ab, speichert zu jeder Antwort eine Bewertung, zählt Lern-Streaks und Statistiken, importiert und exportiert Stapel und speichert sie als JSON mit Jackson. Gebaut nach dem MVP-Pattern, auf Deutsch und Englisch, mit hellem und dunklem Theme und Tests mit JUnit und Mockito.",
         features: [
           "Karten in Stapeln mit Icons ordnen; Karten können Bilder und Audio enthalten.",
-          "Der Lernmodus wählt die nächste Karte nach Gewicht: Falsche und schwierige Karten kommen öfter.",
+          "Der Lernmodus geht einen Stapel einmal in zufälliger Reihenfolge durch.",
           "Jede Antwort als falsch, schwierig, OK oder leicht bewerten.",
           "Statistiken nach Bewertung und Tag, für den letzten Tag, die letzte Woche, den letzten Monat oder insgesamt, dazu eine Lernserie.",
           "Karten und Stapel als JSON importieren und exportieren, mit einem Dialog für Duplikate.",
@@ -134,13 +192,61 @@ export const de: Dictionary = {
         ],
         built: [
           "Eine JavaFX-Desktop-App nach dem Model-View-Presenter-Muster. Die Views sind in Java-Code gebaut, ein Presenter verbindet sie mit dem Model.",
-          "Die Kartenauswahl ist eine Strategie: Ein CardSelector nutzt hinter einem gemeinsamen Interface einen zufälligen oder einen gewichteten Algorithmus. Eine Bewertung setzt das Gewicht der Karte, von 8 für falsch bis 1 für leicht, und der gewichtete Algorithmus zieht jede Karte mit einer Wahrscheinlichkeit proportional zu ihrem Gewicht.",
+          "Eine klügere Kartenauswahl ist als Strategie vorbereitet: Ein CardSelector nutzt hinter einem gemeinsamen Interface einen zufälligen oder einen gewichteten Algorithmus. Eine Bewertung setzt das Gewicht der Karte, von 8 für falsch bis 1 für leicht, und der gewichtete Algorithmus zieht jede Karte mit einer Wahrscheinlichkeit proportional zu ihrem Gewicht. Unit-Tests decken sie ab, der Lernmodus mischt den Stapel aber noch und nutzt sie nicht.",
           "Stapel, Lerndaten und Serien werden mit Jackson als JSON gespeichert. Übersetzungen und Theme-Farben kommen aus Provider-Klassen, an die sich die Views binden, sodass Sprache und Theme sofort wechseln. JUnit 5 und Mockito testen Model, Speicherung und Übersetzungen. Entstanden ist die App als Schulprojekt im Viererteam, mit User Stories, Pflichtenheft und Protokollen in AsciiDoc, veröffentlicht auf GitHub Pages.",
         ],
-        snippetNotes: [
-          "Die Bewertung bestimmt, wie oft die Karte wiederkommt.",
-          "Statistiken lassen sich auf den letzten Tag, die letzte Woche oder den letzten Monat eingrenzen.",
-        ],
+        architecture: {
+          label: "Architektur von Flashcards",
+          layers: {
+            view: { name: "View · JavaFX" },
+            presenter: { name: "Presenter" },
+            model: { name: "Model" },
+            storage: { name: "Speicherung" },
+          },
+          blocks: {
+            providers: {
+              name: "Provider",
+              label: "Sprache · Theme",
+              text: "TranslationProvider und ThemeProvider halten die aktuelle Sprache und das Theme. Die Views binden ihre Texte und Farben daran, deshalb wirkt ein Wechsel sofort.",
+            },
+            views: {
+              name: "Views",
+              label: "in Java-Code gebaut",
+              text: "Jede Ansicht (Start, Stapel, Lernmodus, Statistik, Einstellungen und die Dialoge) ist in Java-Code gebaut, ohne FXML. Die Views zeigen Daten an und melden, was der Benutzer tut.",
+            },
+            presenter: {
+              name: "MainPresenter",
+              label: "Navigation · Suche · Import",
+              text: "Ein Presenter verbindet die Views mit dem Model. Er übernimmt die Navigation mit Zurück und Vor, die Suche sowie Import und Export von Stapeln und aktualisiert die Views.",
+            },
+            study: {
+              name: "Lernmodus",
+              label: "gemischte Warteschlange",
+              text: "Legt die Karten eines Stapels in zufälliger Reihenfolge in eine Warteschlange und geht sie einmal durch. Jede Antwort wird als falsch, schwierig, OK oder leicht bewertet und bei der Karte gespeichert.",
+            },
+            model: {
+              name: "Model",
+              label: "Stapel · Karten · Serie",
+              text: "Hält die Stapel mit ihren Karten und Lerndaten sowie die Lernserie. Es lädt und speichert sie über die Persistenzschicht.",
+            },
+            stats: {
+              name: "Statistik",
+              label: "Tag · Woche · Monat · gesamt",
+              text: "StatisticsAggregator zählt die Bewertungen eines Stapels oder aller Stapel, für den letzten Tag, die letzte Woche, den letzten Monat oder insgesamt.",
+            },
+            selector: {
+              name: "Kartenauswahl",
+              label: "Strategie · noch nicht eingebunden",
+              text: "Eine Strategie für die nächste Karte: zufällig oder gewichtet, sodass falsch (8) oder schwierig (4) bewertete Karten öfter wiederkommen als OK (2) oder leicht (1), unbewertete zählen 3. Unit-Tests decken sie ab, der Lernmodus nutzt sie aber noch nicht.",
+            },
+            persistence: {
+              name: "Persistence",
+              label: "Jackson · JSON",
+              text: "Speichert die Stapel und die Lernserie mit Jackson als JSON und importiert und exportiert einzelne Karten oder ganze Stapel.",
+            },
+          },
+          links: { events: "Ereignisse · Updates", calls: "Aufrufe", json: "JSON" },
+        },
       },
       "vector-viewer": {
         title: "3D-Vektor-Viewer",
@@ -158,10 +264,47 @@ export const de: Dictionary = {
           "Geschrieben in C# auf .NET 10 mit Raylib-cs, den C#-Bindings für raylib. Die Solution hat zwei Projekte: eine Konsolen-App mit Fenster, Kamera und Hauptschleife und eine Klassenbibliothek mit Vektor-Model, Seitenleiste, Raster und einer Zeichen-Erweiterung.",
           "In jedem Frame wird das Raster an den größten Vektor angepasst, jeder Vektor als Zylinder mit einem Kegel als Spitze gezeichnet und die Achsenbeschriftung von 3D in Bildschirmkoordinaten projiziert. Das Panel mit Buttons, Schiebereglern und Liste zeichnet raylib direkt, ohne UI-Framework.",
         ],
-        snippetNotes: [
-          "Eine Extension-Methode zeichnet einen Vektor als dünnen Zylinder mit einem Kegel als Pfeilspitze.",
-          "Achsenbeschriftungen werden in den Bildschirmraum projiziert und ausgelassen, wenn sie hinter der Kamera liegen.",
-        ],
+        architecture: {
+          label: "Architektur des 3D-Vektor-Viewers",
+          layers: {
+            app: { name: "App · VectorViewer" },
+            frame: { name: "Jeder Frame", note: "Raster, Pfeile und Panel liegen in der Klassenbibliothek VectorViewerClasses" },
+            model: { name: "Model" },
+          },
+          blocks: {
+            window: {
+              name: "Fenster & Kamera",
+              label: "raylib · 60 FPS",
+              text: "Program.cs öffnet ein maximiertes Fenster mit veränderbarer Größe und 60 Bildern pro Sekunde und richtet eine perspektivische 3D-Kamera auf den Ursprung. Dann startet die Hauptschleife.",
+            },
+            camera: {
+              name: "Kamera",
+              label: "kreist · Zoom",
+              text: "Jeder Frame beginnt damit, die Kamera auf ihrer Kreisbahn um den Ursprung weiterzubewegen. Das Mausrad zoomt.",
+            },
+            grid: {
+              name: "Raster",
+              label: "wächst · Achsenbeschriftung",
+              text: "GridSetup passt das Raster an den größten Vektor an und beschriftet die X- und die Z-Achse. Die 3D-Position jeder Beschriftung wird auf den Bildschirm projiziert und weggelassen, wenn sie hinter der Kamera liegt.",
+            },
+            arrows: {
+              name: "Pfeile",
+              label: "Zylinder · Kegel",
+              text: "Im 3D-Modus wird jeder Vektor als dünner Zylinder mit einem Kegel als Spitze gezeichnet, über eine Extension-Methode auf Vector3.",
+            },
+            panel: {
+              name: "Panel",
+              label: "Buttons · Schieberegler · Liste",
+              text: "Das Seitenpanel wird zuletzt gezeichnet, direkt mit raylib und ohne UI-Framework. Während es Buttons, Schieberegler und Liste zeichnet, verarbeitet es auch die Maus, deshalb zeigt sich eine Änderung im nächsten Frame.",
+            },
+            vec: {
+              name: "Vec",
+              label: "Start · Ende · Farbe",
+              text: "Ein Vektor besteht aus Startpunkt, Endpunkt und Farbe. Das Panel hält die Liste und gibt jedem neuen Vektor die nächste Farbe aus einer festen Palette.",
+            },
+          },
+          links: { start: "Hauptschleife", next: "Nächster Frame", vectors: "Vektoren" },
+        },
       },
       crow: {
         title: "Crow Demo Backend",
@@ -177,13 +320,50 @@ export const de: Dictionary = {
         ],
         built: [
           "C++ mit dem Header-only-Framework Crow, das CMake beim Build über FetchContent lädt. Ein Build-Skript konfiguriert und baut das Projekt und startet den Server auf Port 3000.",
-          "Die Geräte nutzen Vererbung: Laptop und Server erben von einer abstrakten Klasse Device und überschreiben getSpecs(). Die Speicherung steckt hinter einem Interface IDeviceRepository mit einer In-Memory-Implementierung, sodass eine Datenbank sie ersetzen könnte, ohne die Routen anzufassen.",
+          "Die Geräte nutzen Vererbung: Laptop und Server erben von einer abstrakten Klasse Device und überschreiben getSpecs(). Die Speicherung beschreibt ein Interface IDeviceRepository, implementiert im Speicher; die Routen bekommen die In-Memory-Klasse direkt übergeben.",
           "Die Routen werden in je einer kleinen Funktion pro HTTP-Methode registriert. Eingehendes JSON liest Crows JSON-Reader, und daraus entsteht der passende Gerätetyp oder eine Fehlermeldung.",
         ],
-        snippetNotes: [
-          "GET /devices liefert die Spezifikation jedes Geräts als JSON.",
-          "Das Feld type im Body entscheidet, welches Gerät entsteht, jeweils mit eigenen Prüfungen.",
-        ],
+        architecture: {
+          label: "Architektur des Crow Demo Backends",
+          layers: {
+            http: { name: "HTTP" },
+            app: { name: "Crow-App · main.cpp" },
+            storage: { name: "Speicher" },
+          },
+          blocks: {
+            client: {
+              name: "Client",
+              label: "z. B. requests.http",
+              text: "Ein beliebiger HTTP-Client. Das Repository enthält fertige Anfragen für jeden Endpunkt in test/requests.http.",
+            },
+            routes: {
+              name: "Routen",
+              label: "eine Funktion pro Methode",
+              text: "create_getRoutes, create_postRoutes, create_putRoutes und create_deleteRoutes registrieren jeweils die /devices-Routen einer HTTP-Methode an der Crow-App.",
+            },
+            check: {
+              name: "check_body",
+              label: "prüfen · Typ wählen",
+              text: "Liest den JSON-Body, prüft die Pflichtfelder und erzeugt je nach Feld type einen Laptop oder einen Server. Jedes Problem wird zu 400 Bad Request mit der Fehlermeldung.",
+            },
+            devices: {
+              name: "Laptop · Server",
+              label: "erben von Device",
+              text: "Laptop (Akkulaufzeit) und Server (RAM und Kerne) erben von der abstrakten Klasse Device und überschreiben getSpecs(), das GET als Beschreibung zurückgibt.",
+            },
+            store: {
+              name: "InMemoryDeviceRepository",
+              label: "std::vector · eindeutige IDs",
+              text: "Hält die Geräte in einem Vector im Speicher. Ein Gerät mit einer schon vorhandenen ID lässt sich nicht hinzufügen, und POST antwortet dann mit 400. Die Routen bekommen genau diese Klasse übergeben.",
+            },
+            contract: {
+              name: "IDeviceRepository",
+              label: "Interface",
+              text: "Das Interface mit Hinzufügen, Abrufen, alle Abrufen, Ändern und Löschen, das der In-Memory-Speicher implementiert.",
+            },
+          },
+          links: { json: "JSON · Port 3000", device: "Device*", implements: "implementiert" },
+        },
       },
       "driving-tracker": {
         title: "DrivingTracker",
@@ -199,13 +379,65 @@ export const de: Dictionary = {
         ],
         built: [
           "In Österreich dürfen Fahrschüler mit L17 schon ab 17 mit einer Begleitperson fahren, nach 3.000 km Übungsfahrten. DrivingTracker ist das Fahrtenbuch für diese Kilometer.",
-          "Es ist eine JavaFX-Desktop-App mit FXML-Views und Controllern. Die Fahrten liegen in einer Observable List, umhüllt von einer gefilterten und einer sortierten Liste, sodass sich die Tabelle selbst aktualisiert, wenn Fahrten dazukommen, gesucht oder umsortiert werden.",
+          "Es ist eine JavaFX-Desktop-App mit FXML-Views und Controllern. Die Fahrten liegen in einer Observable List, umhüllt von einer gefilterten und einer sortierten Liste, sodass sich die Listenansicht selbst aktualisiert, wenn Fahrten dazukommen, gesucht oder umsortiert werden.",
           "Die Daten liegen in einer eingebetteten H2-Datenbank mit zwei Tabellen, den Fahrten und ihren Bedingungen, angesprochen über JDBC und Prepared Statements. Der CSV-Import überspringt Zeilen, die er nicht lesen kann. JUnit-Tests decken das Fahrt-Model ab, und die Dokumentation ist in AsciiDoc geschrieben und als eigene Seite veröffentlicht.",
         ],
-        snippetNotes: [
-          "Zwei Tabellen: die Fahrten und zu jeder Fahrt ihre Bedingungen.",
-          "Der Fortschritt ist die Gesamtstrecke geteilt durch das Ziel der gewählten Variante.",
-        ],
+        architecture: {
+          label: "Architektur von DrivingTracker",
+          layers: {
+            ui: { name: "UI · JavaFX" },
+            lists: { name: "TripManager · JavaFX-Listen" },
+            data: { name: "Daten" },
+          },
+          blocks: {
+            views: {
+              name: "FXML-Views",
+              label: "Haupt · Navigation · Statistik",
+              text: "Drei FXML-Dateien beschreiben die Hauptansicht, die Navigationsleiste und die Statistikansicht.",
+            },
+            controllers: {
+              name: "Controller",
+              label: "einer pro View",
+              text: "Jede View hat einen Controller. Der MainController zeigt, erfasst und ändert die Fahrten, der StatisticController zeigt den Fortschritt zum Kilometerziel und die Diagramme.",
+            },
+            csv: {
+              name: "CSV",
+              label: "Import · Export",
+              text: "Die Navigationsleiste exportiert alle Fahrten in eine CSV-Datei und importiert Fahrten aus einer. Zeilen, die sie nicht lesen kann, überspringt sie.",
+            },
+            observable: {
+              name: "ObservableList",
+              label: "alle Fahrten",
+              text: "Der TripManager lädt alle Fahrten aus der Datenbank in eine beobachtbare Liste. Hinzufügen, Ändern oder Löschen einer Fahrt ändert die Liste und die Datenbank.",
+            },
+            filtered: {
+              name: "FilteredList",
+              label: "Suche",
+              text: "Umhüllt die Liste mit der Suche: Eine Fahrt bleibt sichtbar, wenn Startort, Ziel oder eine ihrer Bedingungen den Suchtext enthält.",
+            },
+            sorted: {
+              name: "SortedList",
+              label: "neueste · älteste",
+              text: "Umhüllt die gefilterte Liste und sortiert sie nach Datum, die neuesten oder die ältesten zuerst.",
+            },
+            listview: {
+              name: "ListView",
+              label: "aktualisiert sich selbst",
+              text: "Zeigt die sortierte Liste. Weil jede Liste Änderungen an die nächste weitergibt, aktualisiert sich die Anzeige selbst, wenn Fahrten dazukommen, gesucht oder umsortiert werden.",
+            },
+            db: {
+              name: "DatabaseConnection",
+              label: "JDBC · Prepared Statements",
+              text: "Liest und schreibt die Fahrten mit JDBC und Prepared Statements. Beim Speichern einer geänderten Fahrt werden auch ihre Bedingungen ergänzt und entfernt.",
+            },
+            h2: {
+              name: "H2",
+              label: "TRIP · TRIP_CONDITION",
+              text: "Eine eingebettete H2-Datenbank in einer Datei, mit zwei Tabellen: den Fahrten und zu jeder Fahrt ihren Bedingungen wie Nacht, Regen oder Schnee.",
+            },
+          },
+          links: { manager: "TripManager", jdbc: "JDBC" },
+        },
       },
       rpn: {
         title: "RPN-Rechner",
@@ -224,10 +456,52 @@ export const de: Dictionary = {
           "Die Oberfläche ist in C#-Code statt in XAML gebaut. Tasten sind mit denselben Handlern verbunden wie die Buttons, sodass sich Maus und Tastatur gleich verhalten.",
           "Für den Graphen werden die Stack-Werte als Koeffizienten von c₀ + c₁x + c₂x² + … gelesen, in Schritten von 0,01 ausgewertet und als Liniensegmente auf ein Avalonia-Canvas mit Achsen und Markierungen gezeichnet.",
         ],
-        snippetNotes: [
-          "Die Stack-Werte werden zu den Koeffizienten eines Polynoms.",
-          "Tastenkürzel verwenden dieselben Handler wie die Buttons.",
-        ],
+        architecture: {
+          label: "Architektur des RPN-Rechners",
+          layers: {
+            app: { name: "RpnCalcApp · RpnCalc.Test" },
+            logic: { name: "RpnCalc.Logic" },
+            core: { name: "RpnCalc.Core" },
+          },
+          blocks: {
+            window: {
+              name: "MainWindow",
+              label: "Avalonia · UI in C#",
+              text: "Die ganze Oberfläche ist in C#-Code statt in XAML gebaut, mit dem Fluent-Theme von Avalonia. Tastenkürzel rufen dieselben Handler auf wie die Buttons, deshalb verhalten sich beide gleich.",
+            },
+            graph: {
+              name: "DrawingWindow",
+              label: "Canvas · Schritte von 0,01",
+              text: "Zeichnet das Polynom von x = −10 bis 10 in Schritten von 0,01 als Liniensegmente auf ein Avalonia-Canvas mit Achsen. Passt kein Teil der Kurve hinein, wirft es GraphOutOfRangeException.",
+            },
+            tests: {
+              name: "Tests",
+              label: "xUnit",
+              text: "xUnit-Tests für den Stack-Rechner und für die Auswertung des Polynoms.",
+            },
+            stack: {
+              name: "StackCalculator",
+              label: "Stack<double> · max. 5",
+              text: "Der Rechner auf einem Stack mit höchstens fünf Werten: Push, die vier Grundrechenarten, Tauschen und Leeren. Fehler wie zu wenige Werte oder Division durch null werden als Exceptions geworfen.",
+            },
+            function: {
+              name: "FunctionCalculator",
+              label: "Stack → Polynom",
+              text: "Liest den Stack als Koeffizienten von c₀ + c₁x + c₂x² + …, mit dem untersten Wert als c₀, und wertet das Polynom an der Stelle x aus.",
+            },
+            contract: {
+              name: "IRpnCalculator",
+              label: "Interface",
+              text: "Beschreibt, was ein RPN-Rechner bietet: den Stack, Push und Pop, die vier Rechenarten, Tauschen, Leeren und eine Momentaufnahme des Stacks.",
+            },
+            errors: {
+              name: "Exceptions",
+              label: "Overflow · Underflow · ÷ 0 · …",
+              text: "Eine Exception pro Fehler: voller und leerer Stack, Division durch null, eine leere Zahl hinzufügen und ein Graph, der nicht hineinpasst.",
+            },
+          },
+          links: { uses: "nutzt", implements: "implementiert · wirft" },
+        },
       },
     },
     repoNotes: {

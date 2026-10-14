@@ -1,6 +1,6 @@
 # Continuation Prompt
 
-Lies diese Datei zuerst, wenn du die Arbeit an der Portfolio-Seite fortsetzt. Stand: 02.10.2026.
+Lies diese Datei zuerst, wenn du die Arbeit an der Portfolio-Seite fortsetzt. Stand: 14.10.2026.
 
 ## Arbeitsweise (vom Besitzer vorgegeben)
 
@@ -14,7 +14,7 @@ Lies diese Datei zuerst, wenn du die Arbeit an der Portfolio-Seite fortsetzt. St
 ## Stand
 
 - Die Seite ist live unter **`https://jbrunnerhtl.github.io/`**. Das Repo heißt `jbrunnerhtl/jbrunnerhtl.github.io` und ist damit die User-Site ohne Base-Path. Deploy: `.github/workflows/deploy.yml` bei jedem Push auf `main`, täglich und manuell. Nach Pushes und manuellen Läufen meldet der Job `notify` neue Inhalte an IndexNow.
-- Keine offenen OpenSpec-Changes. Zuletzt archiviert: `2026-10-02-change-accent-to-magenta-violet`, davor `2026-09-30-improve-search-visibility` und `2026-09-30-redesign-portfolio-layout`.
+- Offene OpenSpec-Change: `replace-code-with-architecture` (Branch `feature/architecture-diagrams`): Architektur-Diagramme statt Code. Danach geplant: `add-project-mini-demos`. Zuletzt archiviert: `2026-10-02-change-accent-to-magenta-violet`, davor `2026-09-30-improve-search-visibility` und `2026-09-30-redesign-portfolio-layout`.
 - **Noch nicht live:** Die Umstellung der Akzentfarbe von Türkis auf Magenta-Violett liegt lokal auf dem Branch `feature/magenta-violet-accent` (nicht gepusht). Der Besitzer pusht und merged selbst; bis dahin zeigt die Live-Seite Türkis.
 - Aktuelle Specs: `canvas-3d-experience` (Hero-Sphere), `portfolio-ui`, `project-showcase`, `project-pages`, `search-engine-optimization`, `site-deployment`. Alle gültig (`openspec validate --specs`).
 
@@ -25,7 +25,7 @@ Das Layout folgt dem Vorbild von hamishw.com; Code, Logo und Texte sind eigene.
 - **Seitenleiste** (`src/components/navigation/Sidebar.tsx`): Monogramm „JB.“, senkrechte Abschnittslinks, GitHub und E-Mail. Oben rechts Sprachwechsel und Umschalter für Dark und Light. Unter 1024 px ein Menü über den ganzen Bildschirm.
 - **Startseite** (`src/app/[lang]/page.tsx`), in dieser Reihenfolge:
   - Hero mit wechselnder Rolle und Displacement-Sphere (`src/components/hero/`)
-  - sechs Projekt-Sections mit Code-Mockups
+  - sechs Projekt-Sections mit Architektur-Diagrammen
   - weitere Repos
   - Über mich mit Stats und Profilbild
   - Skills mit Timeline
@@ -38,7 +38,7 @@ Das Layout folgt dem Vorbild von hamishw.com; Code, Logo und Texte sind eigene.
   - `--sphere-light` ist in beiden Modi `#e879f9`, `--sphere-base` ist violett getönt.
   - Das OG-Bild (`src/app/[lang]/og.png/route.tsx`) hat eine eigene Kopie der Farben und muss bei Farbänderungen von Hand mitgezogen werden.
 - **Einblendungen:** `[data-reveal]` mit `RevealObserver`; `DecoderText` für den Scramble-Effekt. Ohne JavaScript ist alles sichtbar.
-- **Code-Mockups:** Syntax-Highlighting mit shiki beim Build (`src/lib/highlight.ts`). Die Ausschnitte stehen in `src/data/snippets.ts`.
+- **Architektur-Diagramme:** `src/components/architecture/ArchitectureDiagram.tsx` zeichnet Schichten mit Bausteinen; ein Klick hebt einen Baustein mit seinen Nachbarn hervor und erklärt ihn. Den Aufbau (Schichten, Zeilen, Verbindungen) beschreibt `src/data/architecture.ts`, alle Wörter stehen unter `projects.items.<id>.architecture` in den Wörterbüchern. Auf der Seite gibt es keinen Projekt-Code mehr.
 - **Daten und Texte:** `src/data/portfolioData.ts` und `src/i18n/dictionaries/{en,de}.ts`. `de.ts` muss exakt die Form von `en.ts` haben.
 
 ## Was der Besitzer eventuell noch tun muss
@@ -59,9 +59,8 @@ curl -s https://jbrunnerhtl.github.io/ | grep -o 'google-site-verification\|msva
 
 ## Fakten, die man sonst neu herausfinden müsste
 
-- **Flashcards:** Der Default-Branch `main` ist fast leer; das vollständige Projekt liegt auf **`develop`**. Snippets und Quell-Links zeigen darauf.
-- **Crow-Terminal-Mockup:** Die Ausgabe ist echt, aufgezeichnet vom lokal gebauten Backend (clang++ mit Crow v1.3.3 und Asio). Das lief auf Port 18080, weil 3000 belegt war; angezeigt wird Port 3000 wie im Repo.
-- **Code-Snippets:** Nur wörtlich aus den Repos übernehmen; Auslassungen mit „…“ markieren. Jede Zeile gegen die Quelldatei prüfen, denn das frühere Generator-Skript lag nur im Scratchpad.
+- **Flashcards:** Der Default-Branch `main` ist fast leer; das vollständige Projekt liegt auf **`develop`**. Die gewichtete Kartenauswahl (`CardSelector`) ist dort getestet, wird aber auf keinem Branch im Lernmodus benutzt; der Lernmodus mischt. Diagramm und Texte sagen das so.
+- **Diagramme prüfen:** Jeder Baustein in `src/data/architecture.ts` nennt in `source` die Repo-Pfade, auf denen er beruht (gegen die Repos geprüft im Oktober 2026). Nach Änderungen an einem Projekt die Repos read-only klonen (nie bauen oder ausführen) und Bausteine, Verbindungen und Erklärungen gegen diese Pfade lesen. Nichts zeigen, was der Code nicht enthält; Vorhandenes, aber nicht Eingebundenes ausdrücklich markieren.
 - **Driving Planner** hat eine Live-Seite auf GitHub Pages der Klassenorganisation (`demoUrl`).
 - **Profilbild:** `public/profile.jpg` ist das GitHub-Avatar (460×460, eine Galaxie-Grafik). Daneben steht „JBRUNNERHTL“ als senkrechter Schriftzug in voller Textfarbe; die frühere Outline-Variante war schwer lesbar.
 - **Hero-Rollen** (in den Wörterbüchern): EN „Developer + Student / Backend Dev / App Builder / Tinkerer“, DE „Entwickler + Schüler / Backend-Dev / App-Bauer / Tüftler“.

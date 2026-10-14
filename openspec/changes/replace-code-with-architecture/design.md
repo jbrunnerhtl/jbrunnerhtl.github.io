@@ -46,6 +46,9 @@ The exact blocks are set during the repository check (tasks, section 2), not her
 
 **Styling in `globals.css`, from tokens only.** A new "Architecture diagrams" block replaces the mockup, shiki and `device` reveal CSS. Highlights use `--accent` for lines and borders and `--accent-text` for text. The contrast of every text colour is checked again in both modes, as the continuation notes require after colour work. Transitions are short (opacity, border colour, box shadow) and disabled under reduced motion.
 
+**Show what the code does, mark what it doesn't.** When a component exists but isn't used by the app, the diagram may show it only with an explicit note. This applies to Flashcards: the card selection strategy (random or weighted, weights 8/4/2/1 and 3 for unrated cards) is a block in the model layer labelled as tested but not yet wired into the study mode, which shuffles its cards. The owner chose this over leaving the strategy out.
+- Alternative: leave the strategy out. Rejected by the owner: it is real, tested work, and hiding it loses the most interesting design decision of the project.
+
 **Reveal stays generic.** The diagram uses the plain `data-reveal` fade and rise like the text beside it. The `device` variant and its lid rules are deleted.
 
 **Removal in one go.** `Mockup.tsx`, `snippets.ts`, `highlight.ts`, the `mockup` and `details` fields, the `highlightAll` calls in both routes, the code-related dictionary keys (`mockupLabel`, `snippetNotes`, `page.code`, `page.source`) and the `shiki` dependency are removed in this change. Leaving them would keep dead code and a build-time dependency for nothing.

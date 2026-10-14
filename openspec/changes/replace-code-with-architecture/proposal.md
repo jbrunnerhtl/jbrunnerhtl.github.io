@@ -19,6 +19,7 @@ The projects are shown as code excerpts in device frames. The owner finds the la
 - The home page shows the diagram where the mockup was, with the outline lettering of the language kept behind it. The project page shows the same diagram where its mockup was.
 - Diagram texts (layer names, block names, short labels, explanations, the accessible name) exist in English and German. The code-related texts (`mockupLabel`, `snippetNotes`, the "From the code" and "Source" labels) are removed.
 - Removed code: the mockup component, `src/data/snippets.ts`, `src/lib/highlight.ts`, the mockup and shiki CSS, and the `shiki` dependency.
+- Three existing project texts that the repository check found to be wrong are corrected in both languages: Flashcards says the study mode picks cards by weight (it shuffles them; the weighted selection exists and is tested but is not wired in), Crow says a database could replace the in-memory store without touching the routes (the routes take the concrete in-memory class), and DrivingTracker calls its trip list a table (it is a list view).
 - Not part of this change: interactive mini demos on the project pages. They follow in a separate change (`add-project-mini-demos`).
 
 ## Capabilities

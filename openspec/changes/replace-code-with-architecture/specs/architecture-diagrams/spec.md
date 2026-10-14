@@ -29,7 +29,7 @@ Activating a block SHALL highlight it, its direct neighbours and the links betwe
 
 #### Scenario: Visitor clicks a block
 - **WHEN** the visitor clicks the "Service" block in the Driving Planner diagram
-- **THEN** "Service", "Router" and "Repository" and the two links between them are highlighted, the other blocks are dimmed, and the explanation of the service appears below the diagram
+- **THEN** "Service" and its direct neighbours "Router", "Repository" and "Unit of Work" are highlighted together with the links to them, the other blocks are dimmed, and the explanation of the service appears below the diagram
 
 #### Scenario: Visitor resets the diagram
 - **WHEN** a block is active and the visitor presses Escape or clicks outside the diagram
