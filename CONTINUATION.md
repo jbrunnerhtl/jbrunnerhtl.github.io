@@ -14,9 +14,9 @@ Lies diese Datei zuerst, wenn du die Arbeit an der Portfolio-Seite fortsetzt. St
 ## Stand
 
 - Die Seite ist live unter **`https://jbrunnerhtl.github.io/`**. Das Repo heißt `jbrunnerhtl/jbrunnerhtl.github.io` und ist damit die User-Site ohne Base-Path. Deploy: `.github/workflows/deploy.yml` bei jedem Push auf `main`, täglich und manuell. Nach Pushes und manuellen Läufen meldet der Job `notify` neue Inhalte an IndexNow.
-- Offene OpenSpec-Change: `replace-code-with-architecture` (Branch `feature/architecture-diagrams`): Architektur-Diagramme statt Code. Danach geplant: `add-project-mini-demos`. Zuletzt archiviert: `2026-10-02-change-accent-to-magenta-violet`, davor `2026-09-30-improve-search-visibility` und `2026-09-30-redesign-portfolio-layout`.
+- Keine offenen OpenSpec-Changes. Zuletzt archiviert: `2026-10-14-replace-code-with-architecture` (Architektur-Diagramme statt Code), davor `2026-10-02-change-accent-to-magenta-violet`. Als Nächstes geplant: `add-project-mini-demos` (interaktive Mini-Demos auf den Projektseiten).
 - **Noch nicht live:** Die Umstellung der Akzentfarbe von Türkis auf Magenta-Violett liegt lokal auf dem Branch `feature/magenta-violet-accent` (nicht gepusht). Der Besitzer pusht und merged selbst; bis dahin zeigt die Live-Seite Türkis.
-- Aktuelle Specs: `canvas-3d-experience` (Hero-Sphere), `portfolio-ui`, `project-showcase`, `project-pages`, `search-engine-optimization`, `site-deployment`. Alle gültig (`openspec validate --specs`).
+- Aktuelle Specs: `architecture-diagrams`, `canvas-3d-experience` (Hero-Sphere), `portfolio-ui`, `project-showcase`, `project-pages`, `search-engine-optimization`, `site-deployment`. Alle gültig (`openspec validate --specs`).
 
 ## Aufbau der Seite
 

@@ -71,7 +71,7 @@ The system SHALL style the site from color tokens in a dark and a light mode, wi
 - **THEN** the button, the divider and the number all use the dark magenta-violet
 
 ### Requirement: Reveal and Text Effects
-The system SHALL reveal section content as it scrolls into view: dividers draw from left to right, and headings, text, buttons and mockups fade and rise in with a short stagger, each only once per page view. Selected headings SHALL build up with a scramble effect: random glyphs settle into the final text from left to right. These are the hero's cycling role, the About greeting and the contact heading. Server-rendered HTML and assistive technology SHALL always contain the final text. With reduced motion, all content SHALL be shown immediately and without scramble.
+The system SHALL reveal section content as it scrolls into view: dividers draw from left to right, and headings, text, buttons and architecture diagrams fade and rise in with a short stagger, each only once per page view. Selected headings SHALL build up with a scramble effect: random glyphs settle into the final text from left to right. These are the hero's cycling role, the About greeting and the contact heading. Server-rendered HTML and assistive technology SHALL always contain the final text. With reduced motion, all content SHALL be shown immediately and without scramble.
 
 #### Scenario: Visitor scrolls to the About section
 - **WHEN** the About section enters the viewport
@@ -84,6 +84,10 @@ The system SHALL reveal section content as it scrolls into view: dividers draw f
 #### Scenario: Content without JavaScript
 - **WHEN** the page is viewed without JavaScript
 - **THEN** all sections and their content are visible in reading order
+
+#### Scenario: Visitor scrolls to a project diagram
+- **WHEN** a project's architecture diagram enters the viewport
+- **THEN** it fades and rises in like the text beside it, without any device or lid animation
 
 ### Requirement: Native Scrolling With Section Links
 The system SHALL use the browser's native scrolling. In-page navigation (sidebar links, the scroll indicator, "Send me a message") SHALL smooth-scroll to the target section, and SHALL jump instantly when the user prefers reduced motion. Links from a project page to a home section SHALL open the home page at that section.

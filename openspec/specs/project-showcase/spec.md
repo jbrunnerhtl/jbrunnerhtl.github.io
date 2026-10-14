@@ -1,7 +1,7 @@
 # project-showcase Specification
 
 ## Purpose
-How Jan Brunner's GitHub work is presented on the home page: full-height project sections with code mockups built from verified repository material, further repositories, skills with the timeline, and live GitHub statistics.
+How Jan Brunner's GitHub work is presented on the home page: full-height project sections with architecture diagrams verified against each repository, further repositories, skills with the timeline, and live GitHub statistics.
 
 ## Requirements
 
@@ -29,19 +29,19 @@ The language ranking SHALL exclude Shell, HTML and Prolog. The system SHALL fall
 - **THEN** the page still renders using the stored fallback values
 
 ### Requirement: Project Sections
-The home page SHALL present the six featured projects in featured order, each as a section of at least one viewport height. The text SHALL be on one side and the mockup on the other, alternating sides from project to project; on narrow screens the mockup SHALL come after the text. Each section SHALL show:
+The home page SHALL present the six featured projects in featured order, each as a section of at least one viewport height. The text SHALL be on one side and the project's architecture diagram on the other, alternating sides from project to project; on narrow screens the diagram SHALL come after the text. Each section SHALL show:
 - an accent divider with the project's number (01–06)
 - the title
 - a one-sentence summary in the current language
 - the language, year and, for team projects, a localized "Team · N" badge
 - an accent-colored "View project" button with an angled corner, which opens the project's detail page
-- the project's main programming language as large decorative outline lettering behind the mockup, hidden from assistive technology
+- the project's main programming language as large decorative outline lettering behind the diagram, hidden from assistive technology
 
 The first section SHALL carry the section id used by the "Projects" navigation.
 
 #### Scenario: User scrolls through the projects
 - **WHEN** the user scrolls from the hero to the About section
-- **THEN** six project sections follow each other in featured order, with text and mockup changing sides each time, and each section's divider, text and mockup reveal as it enters the view
+- **THEN** six project sections follow each other in featured order, with text and diagram changing sides each time, and each section's divider, text and diagram reveal as it enters the view
 
 #### Scenario: User opens a project
 - **WHEN** the user activates "View project" in the Flashcards section
@@ -49,35 +49,14 @@ The first section SHALL carry the section id used by the "Projects" navigation.
 
 #### Scenario: Project sections on a phone
 - **WHEN** the projects are viewed on a 390px wide screen
-- **THEN** each section shows the text first and the mockup below, without horizontal overflow
+- **THEN** each section shows the text first and the diagram below, without horizontal overflow
 
-### Requirement: Code Mockups
-Each project SHALL have a stylized mockup built from real material of its repository, not from screenshots. The mockup SHALL be one of these frames:
-- a laptop: web apps
-- an application window with title bar: desktop apps
-- a terminal: backends without a user interface
-
-Each frame SHALL contain:
-- an excerpt of the project's actual source code, or real command output for the terminal
-- syntax highlighting in both color modes
-- the file name or command in the frame's title bar
-
-The highlighting SHALL be produced at build time, so the mockup is static HTML with no client-side highlighting code. The code SHALL be real text: selectable and hidden from screen readers only where it is duplicated. Each frame SHALL have an accessible label describing what it shows. The mockup SHALL animate in when revealed: the laptop lid opens, and windows and terminals rise in. With reduced motion, it SHALL simply appear.
-
-#### Scenario: Visitor looks at the Crow Demo Backend
-- **WHEN** the Crow Demo Backend section is shown
-- **THEN** its mockup is a terminal showing a request to the backend's devices endpoint and the JSON the backend returns
-
-#### Scenario: Visitor looks at Flashcards in light mode
-- **WHEN** the Flashcards section is shown in light mode
-- **THEN** its mockup is an application window with Java code from the repository, highlighted with the light-mode colors
-
-#### Scenario: Visitor checks the source
-- **WHEN** the visitor compares a mockup's code with the linked repository
-- **THEN** the code appears in the named file of the repository (excerpted, with omissions marked)
+#### Scenario: No project code on the home page
+- **WHEN** the home page is displayed
+- **THEN** no project shows an excerpt of its source code or command output
 
 ### Requirement: Verified Project Data and Links
-The system SHALL feature six of Jan Brunner's public GitHub projects: Driving Planner, Flashcards, 3D Vector Viewer, Crow Demo Backend, DrivingTracker and RPN Calculator. Their summaries, descriptions, feature lists, tech stacks and code excerpts SHALL be verified against each repository's README and source. The system SHALL NOT feature Prolog or the Prolog project. Featured projects MAY live in other GitHub accounts or organizations. In that case the project's repository link SHALL point to that repository and show a short repository label. Links to repositories and live sites SHALL open in a new tab with `rel="noopener noreferrer"`.
+The system SHALL feature six of Jan Brunner's public GitHub projects: Driving Planner, Flashcards, 3D Vector Viewer, Crow Demo Backend, DrivingTracker and RPN Calculator. Their summaries, descriptions, feature lists, tech stacks and architecture diagrams SHALL be verified against each repository's README and source. The system SHALL NOT feature Prolog or the Prolog project. Featured projects MAY live in other GitHub accounts or organizations. In that case the project's repository link SHALL point to that repository and show a short repository label. Links to repositories and live sites SHALL open in a new tab with `rel="noopener noreferrer"`.
 
 #### Scenario: User opens a project's repository
 - **WHEN** the user activates the GitHub link on a project's detail page
